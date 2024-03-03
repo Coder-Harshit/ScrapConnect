@@ -1,5 +1,5 @@
 # scrap_connect
 
-A Flutter project.
-A Minor project.
-A College Project.
+A Flutter project. <br>
+A Minor project. <br>
+A College Project. <br>
