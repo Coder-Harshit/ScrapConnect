@@ -1,8 +1,46 @@
 import 'package:flutter/material.dart';
 import 'package:scrap_connect/screens/login_screen.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
-class SignUpScreen extends StatelessWidget {
+class SignUpScreen extends StatefulWidget {
   const SignUpScreen({super.key});
+
+  @override
+  State<SignUpScreen> createState() => _SignUpScreenState();
+}
+
+class _SignUpScreenState extends State<SignUpScreen> {
+  final TextEditingController emailController = TextEditingController();
+
+  String password = '';
+
+  Future<void> _signUpWithEmailAndPassword(
+      String email, String password) async {
+    try {
+      UserCredential userCredential = await FirebaseAuth.instance
+          .createUserWithEmailAndPassword(email: email, password: password);
+
+      // You can handle the successful signup here
+      print('User signed up: ${userCredential.user!.uid}');
+      if (userCredential.user != null) {
+        if (mounted) {
+          Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(
+              builder: (context) =>
+                  LoginScreen(), // Replace HomeScreen with your actual screen
+            ),
+          );
+        }
+      } else {
+        // Handle null user case
+        print('User is null after successful login');
+      }
+    } catch (e) {
+      // Handle signup errors
+      print('Signup error: $e');
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -132,6 +170,7 @@ class SignUpScreen extends StatelessWidget {
                         borderRadius: BorderRadius.circular(10.0),
                       ),
                       child: TextField(
+                        controller: emailController,
                         style: TextStyle(
                           color: Colors.white,
                           fontFamily: 'FiraCode',
@@ -193,6 +232,10 @@ class SignUpScreen extends StatelessWidget {
                         borderRadius: BorderRadius.circular(10.0),
                       ),
                       child: TextField(
+                        onChanged: (value) {
+                          // Update the password variable when the text changes
+                          password = value;
+                        },
                         obscureText: true,
                         style: TextStyle(
                           color: Colors.white,
@@ -225,7 +268,9 @@ class SignUpScreen extends StatelessWidget {
 
                 //signup
                 ElevatedButton(
-                  onPressed: () {},
+                  onPressed: () {
+                    _signUpWithEmailAndPassword(emailController.text, password);
+                  },
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Color.fromRGBO(143, 94, 223, 1.0),
                     foregroundColor: Colors.white,
@@ -243,7 +288,7 @@ class SignUpScreen extends StatelessWidget {
                   ),
                 ),
 
-                SizedBox(height: 8),
+                SizedBox(height: 5),
 
                 //divider
                 Row(
@@ -271,10 +316,9 @@ class SignUpScreen extends StatelessWidget {
                     ),
                   ],
                 ),
+                SizedBox(height: 5),
 
-                SizedBox(height: 8),
-
-                //loginWithGoogle
+                //signUpWithGoogle
                 ElevatedButton(
                   onPressed: () {},
                   style: ElevatedButton.styleFrom(
@@ -306,7 +350,7 @@ class SignUpScreen extends StatelessWidget {
                   ),
                 ),
 
-                // SizedBox(height: 10),
+                SizedBox(height: 110),
 
                 //donthaveAccTEXT
                 Center(
@@ -324,7 +368,7 @@ class SignUpScreen extends StatelessWidget {
                   ),
                 ),
 
-                //signup
+                //back-to-login
                 ElevatedButton(
                   onPressed: () {
                     Navigator.pushReplacement(

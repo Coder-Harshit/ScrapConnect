@@ -1,8 +1,47 @@
 import 'package:flutter/material.dart';
 import 'package:scrap_connect/screens/signup_screen.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:scrap_connect/screens/home_screen.dart';
 
-class LoginScreen extends StatelessWidget {
+class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
+
+  @override
+  State<LoginScreen> createState() => _LoginScreenState();
+}
+
+class _LoginScreenState extends State<LoginScreen> {
+  final TextEditingController emailController = TextEditingController();
+
+  String password = '';
+
+  Future<void> _signInWithEmailAndPassword(
+      String email, String password) async {
+    try {
+      UserCredential userCredential = await FirebaseAuth.instance
+          .signInWithEmailAndPassword(email: email, password: password);
+
+      // You can handle the successful login here
+      print('User signed in: ${userCredential.user!.uid}');
+      if (userCredential.user != null) {
+        if (mounted) {
+          Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(
+              builder: (context) =>
+                  HomeScreen(), // Replace HomeScreen with your actual screen
+            ),
+          );
+        }
+      } else {
+        // Handle null user case
+        print('User is null after successful login');
+      }
+    } catch (e) {
+      // Handle login errors
+      print('Login error: $e');
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -71,6 +110,7 @@ class LoginScreen extends StatelessWidget {
                         borderRadius: BorderRadius.circular(10.0),
                       ),
                       child: TextField(
+                        controller: emailController,
                         style: TextStyle(
                           color: Colors.white,
                           fontFamily: 'FiraCode',
@@ -130,6 +170,9 @@ class LoginScreen extends StatelessWidget {
                         borderRadius: BorderRadius.circular(10.0),
                       ),
                       child: TextField(
+                        onChanged: (value) {
+                          password = value;
+                        },
                         obscureText: true,
                         style: TextStyle(
                           color: Colors.white,
@@ -162,7 +205,9 @@ class LoginScreen extends StatelessWidget {
 
                 //login
                 ElevatedButton(
-                  onPressed: () {},
+                  onPressed: () {
+                    _signInWithEmailAndPassword(emailController.text, password);
+                  },
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Color.fromRGBO(143, 94, 223, 1.0),
                     foregroundColor: Colors.white,

@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>API_KEY</key>
+	<string>AIzaSyBrCYSQbZBfc6qgkwCy3bPibXYdA-Ynksw</string>
+	<key>GCM_SENDER_ID</key>
+	<string>171393660081</string>
+	<key>PLIST_VERSION</key>
+	<string>1</string>
+	<key>BUNDLE_ID</key>
+	<string>com.example.scrapConnect</string>
+	<key>PROJECT_ID</key>
+	<string>scrapconnect-dba28</string>
+	<key>STORAGE_BUCKET</key>
+	<string>scrapconnect-dba28.appspot.com</string>
+	<key>IS_ADS_ENABLED</key>
+	<false></false>
+	<key>IS_ANALYTICS_ENABLED</key>
+	<false></false>
+	<key>IS_APPINVITE_ENABLED</key>
+	<true></true>
+	<key>IS_GCM_ENABLED</key>
+	<true></true>
+	<key>IS_SIGNIN_ENABLED</key>
+	<true></true>
+	<key>GOOGLE_APP_ID</key>
+	<string>1:171393660081:ios:c56fd47bb4fef5facade90</string>
+</dict>
+</plist>

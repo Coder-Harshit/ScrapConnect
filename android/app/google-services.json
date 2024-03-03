@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "171393660081",
+    "project_id": "scrapconnect-dba28",
+    "storage_bucket": "scrapconnect-dba28.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:171393660081:android:c0781c5fa7f110b0cade90",
+        "android_client_info": {
+          "package_name": "com.example.scrap_connect"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyApX-xtIeT_QwdvGUI2taqizJYEu5_8ibc"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
