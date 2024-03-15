@@ -117,10 +117,10 @@ class _SignUpScreenState extends State<SignUpScreen> {
                           hintText: 'sampleuser',
                           suffixIcon: Icon(
                             Icons.account_circle_rounded,
-                            color: Colors.grey,
+                            color: Colors.grey[200],
                           ),
                           hintStyle: TextStyle(
-                            color: Colors.white,
+                            color: Colors.grey[350],
                             // color: Colors.indigo[50],
                           ),
                           contentPadding: EdgeInsets.all(20),
@@ -179,10 +179,10 @@ class _SignUpScreenState extends State<SignUpScreen> {
                           hintText: 'sampleuser@gmail.com',
                           suffixIcon: Icon(
                             Icons.mail,
-                            color: Colors.grey,
+                            color: Colors.grey[200],
                           ),
                           hintStyle: TextStyle(
-                            color: Colors.white,
+                            color: Colors.grey[350],
                             // color: Colors.indigo[50],
                           ),
                           contentPadding: EdgeInsets.all(20),
@@ -245,10 +245,10 @@ class _SignUpScreenState extends State<SignUpScreen> {
                           hintText: 'password',
                           suffixIcon: Icon(
                             Icons.lock,
-                            color: Colors.grey,
+                            color: Colors.grey[200],
                           ),
                           hintStyle: TextStyle(
-                            color: Colors.white,
+                            color: Colors.grey[350],
                             // color: Colors.indigo[50],
                           ),
                           contentPadding: EdgeInsets.all(20),
