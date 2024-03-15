@@ -1,63 +1,64 @@
 import 'package:flutter/material.dart';
 import 'package:scrap_connect/screens/login_screen.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 class SignUpScreen extends StatefulWidget {
-  const SignUpScreen({super.key});
+  const SignUpScreen({Key? key}) : super(key: key);
 
   @override
-  State<SignUpScreen> createState() => _SignUpScreenState();
+  _SignUpScreenState createState() => _SignUpScreenState();
 }
 
 class _SignUpScreenState extends State<SignUpScreen> {
   final TextEditingController emailController = TextEditingController();
-
-  String password = '';
+  final TextEditingController passwordController = TextEditingController();
+  final TextEditingController usernameController = TextEditingController();
 
   Future<void> _signUpWithEmailAndPassword(
-      String email, String password) async {
+      String email, String password, String username) async {
     try {
       UserCredential userCredential = await FirebaseAuth.instance
           .createUserWithEmailAndPassword(email: email, password: password);
 
-      // You can handle the successful signup here
-      print('User signed up: ${userCredential.user!.uid}');
-      if (userCredential.user != null) {
-        if (mounted) {
-          Navigator.pushReplacement(
-            context,
-            MaterialPageRoute(
-              builder: (context) =>
-                  LoginScreen(), // Replace HomeScreen with your actual screen
-            ),
-          );
-        }
-      } else {
-        // Handle null user case
-        print('User is null after successful login');
-      }
+      // Save additional user information to Firestore
+      await FirebaseFirestore.instance
+          .collection('users')
+          .doc(userCredential.user!.uid)
+          .set({
+        'email': email,
+        'username': username,
+        // Add more fields as needed
+      });
+
+      // Navigate to the login screen after successful signup
+      Navigator.pushReplacement(
+          context, MaterialPageRoute(builder: (context) => LoginScreen()));
     } catch (e) {
       // Handle signup errors
       print('Signup error: $e');
+      // Show error message to the user
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Sign up failed: $e'),
+          backgroundColor: Colors.red,
+        ),
+      );
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    // return const Placeholder();
     return Scaffold(
-      // backgroundColor: Color.fromARGB(255, 93, 39, 179),
       backgroundColor: Theme.of(context).primaryColor,
       body: SafeArea(
         child: SingleChildScrollView(
           child: Container(
             margin: EdgeInsets.all(12.5),
             child: Column(
-              // mainAxisAlignment: MainAxisAlignment.spaceAround,
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                // padding: const EdgeInsets.fromLTRB(15, 5, 15, 5),
                 Text(
                   "SIGN UP",
                   style:
@@ -75,8 +76,6 @@ class _SignUpScreenState extends State<SignUpScreen> {
                             ),
                           ),
                 ),
-
-                //username COLUMN
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
@@ -100,28 +99,27 @@ class _SignUpScreenState extends State<SignUpScreen> {
                         boxShadow: [
                           BoxShadow(
                             color: Colors.black.withOpacity(0.1),
-                            // color: Colors.grey.withOpacity(0.5),
                             spreadRadius: 5,
                             blurRadius: 5,
-                            offset: Offset(0, 3), // changes position of shadow
+                            offset: Offset(0, 3),
                           ),
                         ],
                         borderRadius: BorderRadius.circular(10.0),
                       ),
                       child: TextField(
+                        controller: usernameController,
                         style: TextStyle(
                           color: Colors.white,
                           fontFamily: 'FiraCode',
                         ),
                         decoration: InputDecoration(
-                          hintText: 'sampleuser',
+                          hintText: 'Enter your username',
                           suffixIcon: Icon(
                             Icons.account_circle_rounded,
                             color: Colors.grey[200],
                           ),
                           hintStyle: TextStyle(
                             color: Colors.grey[350],
-                            // color: Colors.indigo[50],
                           ),
                           contentPadding: EdgeInsets.all(20),
                           border: OutlineInputBorder(
@@ -136,8 +134,6 @@ class _SignUpScreenState extends State<SignUpScreen> {
                     SizedBox(height: 12.5),
                   ],
                 ),
-
-                //EMAIL COLUMN
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
@@ -161,10 +157,9 @@ class _SignUpScreenState extends State<SignUpScreen> {
                         boxShadow: [
                           BoxShadow(
                             color: Colors.black.withOpacity(0.1),
-                            // color: Colors.grey.withOpacity(0.5),
                             spreadRadius: 5,
                             blurRadius: 5,
-                            offset: Offset(0, 3), // changes position of shadow
+                            offset: Offset(0, 3),
                           ),
                         ],
                         borderRadius: BorderRadius.circular(10.0),
@@ -176,14 +171,13 @@ class _SignUpScreenState extends State<SignUpScreen> {
                           fontFamily: 'FiraCode',
                         ),
                         decoration: InputDecoration(
-                          hintText: 'sampleuser@gmail.com',
+                          hintText: 'Enter your email',
                           suffixIcon: Icon(
                             Icons.mail,
                             color: Colors.grey[200],
                           ),
                           hintStyle: TextStyle(
                             color: Colors.grey[350],
-                            // color: Colors.indigo[50],
                           ),
                           contentPadding: EdgeInsets.all(20),
                           border: OutlineInputBorder(
@@ -198,8 +192,6 @@ class _SignUpScreenState extends State<SignUpScreen> {
                     SizedBox(height: 12.5),
                   ],
                 ),
-
-                //PASSWORD COLUMN
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
@@ -223,33 +215,28 @@ class _SignUpScreenState extends State<SignUpScreen> {
                         boxShadow: [
                           BoxShadow(
                             color: Colors.black.withOpacity(0.1),
-                            // color: Colors.grey.withOpacity(0.5),
                             spreadRadius: 5,
                             blurRadius: 5,
-                            offset: Offset(0, 3), // changes position of shadow
+                            offset: Offset(0, 3),
                           ),
                         ],
                         borderRadius: BorderRadius.circular(10.0),
                       ),
                       child: TextField(
-                        onChanged: (value) {
-                          // Update the password variable when the text changes
-                          password = value;
-                        },
+                        controller: passwordController,
                         obscureText: true,
                         style: TextStyle(
                           color: Colors.white,
                           fontFamily: 'FiraCode',
                         ),
                         decoration: InputDecoration(
-                          hintText: 'password',
+                          hintText: 'Enter your password',
                           suffixIcon: Icon(
                             Icons.lock,
                             color: Colors.grey[200],
                           ),
                           hintStyle: TextStyle(
                             color: Colors.grey[350],
-                            // color: Colors.indigo[50],
                           ),
                           contentPadding: EdgeInsets.all(20),
                           border: OutlineInputBorder(
@@ -261,15 +248,13 @@ class _SignUpScreenState extends State<SignUpScreen> {
                         ),
                       ),
                     ),
+                    SizedBox(height: 40),
                   ],
                 ),
-
-                SizedBox(height: 40),
-
-                //signup
                 ElevatedButton(
                   onPressed: () {
-                    _signUpWithEmailAndPassword(emailController.text, password);
+                    _signUpWithEmailAndPassword(emailController.text,
+                        passwordController.text, usernameController.text);
                   },
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Color.fromRGBO(143, 94, 223, 1.0),
@@ -287,16 +272,13 @@ class _SignUpScreenState extends State<SignUpScreen> {
                     ),
                   ),
                 ),
-
                 SizedBox(height: 5),
-
-                //divider
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     Expanded(
                       child: Divider(
-                        color: Colors.white54, // Color of the line
+                        color: Colors.white54,
                       ),
                     ),
                     Padding(
@@ -311,16 +293,16 @@ class _SignUpScreenState extends State<SignUpScreen> {
                     ),
                     Expanded(
                       child: Divider(
-                        color: Colors.white54, // Color of the line
+                        color: Colors.white54,
                       ),
                     ),
                   ],
                 ),
                 SizedBox(height: 5),
-
-                //signUpWithGoogle
                 ElevatedButton(
-                  onPressed: () {},
+                  onPressed: () {
+                    // Implement sign up with Google
+                  },
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Color.fromRGBO(143, 94, 223, 1.0),
                     foregroundColor: Colors.white,
@@ -335,9 +317,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                         'assets/images/Search_GSA.original.png',
                         width: 24,
                       ),
-                      SizedBox(
-                        width: 10,
-                      ),
+                      SizedBox(width: 10),
                       Text(
                         "Signup with GOOGLE",
                         style: TextStyle(
@@ -349,10 +329,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                     ],
                   ),
                 ),
-
                 SizedBox(height: 110),
-
-                //donthaveAccTEXT
                 Center(
                   child: Text(
                     "Already have an Account?",
@@ -367,8 +344,6 @@ class _SignUpScreenState extends State<SignUpScreen> {
                         ),
                   ),
                 ),
-
-                //back-to-login
                 ElevatedButton(
                   onPressed: () {
                     Navigator.pushReplacement(

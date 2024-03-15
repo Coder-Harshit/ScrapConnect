@@ -44,38 +44,38 @@ class DefaultFirebaseOptions {
   }
 
   static const FirebaseOptions web = FirebaseOptions(
-    apiKey: 'AIzaSyDG3p93bfevcuDuXxsT7iALoYVhVwgkidA',
-    appId: '1:171393660081:web:5ceeb7ef0b33335ecade90',
-    messagingSenderId: '171393660081',
-    projectId: 'scrapconnect-dba28',
-    authDomain: 'scrapconnect-dba28.firebaseapp.com',
-    storageBucket: 'scrapconnect-dba28.appspot.com',
-    measurementId: 'G-RV58D3C85P',
+    apiKey: 'AIzaSyBlilJSdQYwIp_O-pQsc2PYZrJyDkwRiQo',
+    appId: '1:279028940501:web:1b9e47ee62360b1d096c5c',
+    messagingSenderId: '279028940501',
+    projectId: 'scrapconnect-32544',
+    authDomain: 'scrapconnect-32544.firebaseapp.com',
+    storageBucket: 'scrapconnect-32544.appspot.com',
+    measurementId: 'G-SN96ECQF6E',
   );
 
   static const FirebaseOptions android = FirebaseOptions(
-    apiKey: 'AIzaSyApX-xtIeT_QwdvGUI2taqizJYEu5_8ibc',
-    appId: '1:171393660081:android:c0781c5fa7f110b0cade90',
-    messagingSenderId: '171393660081',
-    projectId: 'scrapconnect-dba28',
-    storageBucket: 'scrapconnect-dba28.appspot.com',
+    apiKey: 'AIzaSyBRheraX8qeSoEUtwmpUJDdeaAQ2_bJc34',
+    appId: '1:279028940501:android:f9602d4c95ed448a096c5c',
+    messagingSenderId: '279028940501',
+    projectId: 'scrapconnect-32544',
+    storageBucket: 'scrapconnect-32544.appspot.com',
   );
 
   static const FirebaseOptions ios = FirebaseOptions(
-    apiKey: 'AIzaSyBrCYSQbZBfc6qgkwCy3bPibXYdA-Ynksw',
-    appId: '1:171393660081:ios:c56fd47bb4fef5facade90',
-    messagingSenderId: '171393660081',
-    projectId: 'scrapconnect-dba28',
-    storageBucket: 'scrapconnect-dba28.appspot.com',
+    apiKey: 'AIzaSyAap6mJnNu5n1EWtk6tIOv-eDfPgVSvZ0g',
+    appId: '1:279028940501:ios:dafba94abf9c64f2096c5c',
+    messagingSenderId: '279028940501',
+    projectId: 'scrapconnect-32544',
+    storageBucket: 'scrapconnect-32544.appspot.com',
     iosBundleId: 'com.example.scrapConnect',
   );
 
   static const FirebaseOptions macos = FirebaseOptions(
-    apiKey: 'AIzaSyBrCYSQbZBfc6qgkwCy3bPibXYdA-Ynksw',
-    appId: '1:171393660081:ios:367ef1b5f0009401cade90',
-    messagingSenderId: '171393660081',
-    projectId: 'scrapconnect-dba28',
-    storageBucket: 'scrapconnect-dba28.appspot.com',
+    apiKey: 'AIzaSyAap6mJnNu5n1EWtk6tIOv-eDfPgVSvZ0g',
+    appId: '1:279028940501:ios:b9c94bd4cb8c2ccf096c5c',
+    messagingSenderId: '279028940501',
+    projectId: 'scrapconnect-32544',
+    storageBucket: 'scrapconnect-32544.appspot.com',
     iosBundleId: 'com.example.scrapConnect.RunnerTests',
   );
 }

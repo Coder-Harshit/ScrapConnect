@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:scrap_connect/screens/signup_screen.dart';
 import 'package:scrap_connect/screens/home_screen.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({Key? key}) : super(key: key);
@@ -21,9 +22,18 @@ class _LoginScreenState extends State<LoginScreen> {
           .signInWithEmailAndPassword(email: email, password: password);
 
       if (userCredential.user != null) {
+        // Retrieve additional user information from Firestore
+        DocumentSnapshot userInfo = await FirebaseFirestore.instance
+            .collection('users')
+            .doc(userCredential.user!.uid)
+            .get();
+        String username = userInfo.get('username');
+
+        // Navigate to home screen after successful login
         Navigator.pushReplacement(
           context,
-          MaterialPageRoute(builder: (context) => HomeScreen()),
+          MaterialPageRoute(
+              builder: (context) => HomeScreen(username: username)),
         );
       } else {
         print('User is null after successful login');
@@ -94,7 +104,6 @@ class _LoginScreenState extends State<LoginScreen> {
                             hintText: 'sampleuser@gmail.com',
                             suffixIcon:
                                 Icon(Icons.mail, color: Colors.grey[200]),
-                            // hintStyle: TextStyle(color: Colors.white),
                             hintStyle: TextStyle(color: Colors.grey[350]),
                             contentPadding: EdgeInsets.all(20),
                             border: OutlineInputBorder(
@@ -138,7 +147,6 @@ class _LoginScreenState extends State<LoginScreen> {
                             suffixIcon:
                                 Icon(Icons.lock, color: Colors.grey[200]),
                             hintStyle: TextStyle(color: Colors.grey[350]),
-                            // hintStyle: TextStyle(color: Colors.white),
                             contentPadding: EdgeInsets.all(20),
                             border: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(10.0),
