@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:scrap_connect/screens/signup_screen.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:scrap_connect/screens/home_screen.dart';
