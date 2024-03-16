@@ -14,6 +14,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
   final TextEditingController emailController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
   final TextEditingController usernameController = TextEditingController();
+  bool _obscureText = true;
 
   Future<void> _signUpWithEmailAndPassword(
       String email, String password, String username) async {
@@ -224,16 +225,27 @@ class _SignUpScreenState extends State<SignUpScreen> {
                       ),
                       child: TextField(
                         controller: passwordController,
-                        obscureText: true,
+                        obscureText: _obscureText,
+                        // obscureText: true,
                         style: TextStyle(
                           color: Colors.white,
                           fontFamily: 'FiraCode',
                         ),
                         decoration: InputDecoration(
                           hintText: 'Enter your password',
-                          suffixIcon: Icon(
-                            Icons.lock,
-                            color: Colors.grey[200],
+                          suffixIcon: IconButton(
+                            onPressed: () {
+                              setState(() {
+                                _obscureText =
+                                    !_obscureText; // Toggle the boolean value
+                              });
+                            },
+                            icon: Icon(
+                              _obscureText
+                                  ? Icons.visibility
+                                  : Icons.visibility_off,
+                              color: Colors.grey[200],
+                            ),
                           ),
                           hintStyle: TextStyle(
                             color: Colors.grey[350],

@@ -13,6 +13,7 @@ class LoginScreen extends StatefulWidget {
 
 class _LoginScreenState extends State<LoginScreen> {
   final TextEditingController emailController = TextEditingController();
+  bool _obscureText = true;
   String password = '';
 
   Future<void> _signInWithEmailAndPassword(
@@ -137,15 +138,28 @@ class _LoginScreenState extends State<LoginScreen> {
                           onChanged: (value) {
                             password = value;
                           },
-                          obscureText: true,
+                          // obscureText: true,
+                          obscureText: _obscureText,
                           style: TextStyle(
                             color: Colors.white,
                             fontFamily: 'FiraCode',
                           ),
                           decoration: InputDecoration(
                             hintText: 'password',
-                            suffixIcon:
-                                Icon(Icons.lock, color: Colors.grey[200]),
+                            suffixIcon: IconButton(
+                              onPressed: () {
+                                setState(() {
+                                  _obscureText =
+                                      !_obscureText; // Toggle the boolean value
+                                });
+                              },
+                              icon: Icon(
+                                _obscureText
+                                    ? Icons.visibility
+                                    : Icons.visibility_off,
+                                color: Colors.grey[200],
+                              ),
+                            ),
                             hintStyle: TextStyle(color: Colors.grey[350]),
                             contentPadding: EdgeInsets.all(20),
                             border: OutlineInputBorder(
