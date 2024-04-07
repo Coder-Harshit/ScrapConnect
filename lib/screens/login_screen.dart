@@ -44,8 +44,9 @@ class _LoginScreenState extends State<LoginScreen> {
       // Show error message to the user
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text('Login failed: $e'),
           // content: Text('Login failed'),
+
+          content: Text('Login failed: $e'),
           backgroundColor: Colors.red,
         ),
       );
