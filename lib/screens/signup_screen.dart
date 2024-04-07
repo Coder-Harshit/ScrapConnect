@@ -4,7 +4,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 class SignUpScreen extends StatefulWidget {
-  const SignUpScreen({Key? key}) : super(key: key);
+  const SignUpScreen({super.key});
 
   @override
   _SignUpScreenState createState() => _SignUpScreenState();
@@ -41,6 +41,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
       // Show error message to the user
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
+          // content: Text('Sign up failed'),
           content: Text('Sign up failed: $e'),
           backgroundColor: Colors.red,
         ),
