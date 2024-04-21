@@ -1,6 +1,7 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
-import '../utils/sortingFunc.dart';
+// import '../utils/sortingFunc.dart';
 import 'package:cloud_firestore/cloud_firestore.dart'; // Import Firestore package
 
 class HomeScreen extends StatefulWidget {
@@ -25,7 +26,7 @@ class _HomeScreenState extends State<HomeScreen> {
         index: _currentIndex,
         children: [
           RateListPage(),
-          DealersListPage(),
+          DealersListPage(username: widget.username),
         ],
       ),
       bottomNavigationBar: BottomNavigationBar(
@@ -148,6 +149,8 @@ class _RateListPageState extends State<RateListPage> {
 }
 
 class DealersListPage extends StatefulWidget {
+  final String username;
+  DealersListPage({required this.username});
   @override
   _DealersListPageState createState() => _DealersListPageState();
 }
@@ -186,8 +189,10 @@ class _DealersListPageState extends State<DealersListPage> {
                   Navigator.push(
                     context,
                     MaterialPageRoute(
-                      builder: (context) =>
-                          DealerRatePage(dealerId: doc.data()['ID'].toString()),
+                      builder: (context) => DealerRatePage(
+                        dealerId: doc.data()['ID'].toString(),
+                        username: widget.username,
+                      ),
                     ),
                   );
                 },
@@ -236,8 +241,9 @@ class _DealersListPageState extends State<DealersListPage> {
 
 class DealerRatePage extends StatelessWidget {
   final String dealerId;
+  final String username;
 
-  DealerRatePage({required this.dealerId});
+  DealerRatePage({required this.dealerId, required this.username});
 
   @override
   Widget build(BuildContext context) {
@@ -267,16 +273,81 @@ class DealerRatePage extends StatelessWidget {
           Map<String, dynamic> rates =
               snapshot.data!.data() as Map<String, dynamic>;
 
-          return ListView(
-            children: rates.entries.map((entry) {
-              return ListTile(
-                title: Text(entry.key), // Item name
-                subtitle: Text(entry.value.toString()), // Item rate
-              );
-            }).toList(),
+          return Column(
+            children: [
+              Expanded(
+                child: ListView(
+                  children: rates.entries.map((entry) {
+                    return ListTile(
+                      title: Text(entry.key), // Item name
+                      subtitle: Text(entry.value.toString()), // Item rate
+                    );
+                  }).toList(),
+                ),
+              ),
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: ElevatedButton(
+                  onPressed: () {
+                    // Book appointment logic
+                    bookAppointment(context, dealerId, username);
+                  },
+                  child: Text("BOOK APPOINTMENT"),
+                ),
+              )
+            ],
           );
         },
       ),
     );
+  }
+
+  // Function to book appointment
+  Future<void> bookAppointment(
+      BuildContext context, String dealerId, String username) async {
+    try {
+      // Create a new appointment document
+      await FirebaseFirestore.instance.collection('Appointments').add({
+        'dealerId': dealerId, // ID of the dealer
+        'userName': username, // Username of the user
+        'timestamp':
+            FieldValue.serverTimestamp(), // Timestamp for the appointment
+      });
+
+      // Show success message
+      showDialog(
+        context: context,
+        builder: (context) => AlertDialog(
+          title: Text('Appointment Booked'),
+          content: Text('Your appointment has been booked successfully!'),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop(); // Close the dialog
+              },
+              child: Text('OK'),
+            ),
+          ],
+        ),
+      );
+    } catch (e) {
+      print('Error booking appointment: $e');
+      // Show error message
+      showDialog(
+        context: context,
+        builder: (context) => AlertDialog(
+          title: Text('Error'),
+          content: Text('Failed to book appointment. Please try again later.'),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop(); // Close the dialog
+              },
+              child: Text('OK'),
+            ),
+          ],
+        ),
+      );
+    }
   }
 }
