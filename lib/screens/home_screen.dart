@@ -79,40 +79,83 @@ class _RateListPageState extends State<RateListPage> {
 
     // Loop through data and populate _rows list
     data.forEach((itemName, rate) {
+      // Determine the image path based on the item name
+      String imagePath = _getImagePath(itemName);
+
       // Create DataRow and add it to _rows list
       _rows.add(
         DataRow(cells: [
-          DataCell(Text(itemName)),
+          DataCell(
+            Padding(
+              padding: const EdgeInsets.all(3.0),
+              child: Row(
+                children: [
+                  SizedBox(
+                    width: 124, // Set the width of the image
+                    height: 124, // Set the height of the image
+                    child: Image.asset(
+                      imagePath, // Display the image from assets
+                      fit: BoxFit.cover, // Cover the entire space
+                    ),
+                  ),
+                  SizedBox(
+                    width: 8,
+                    // height: 8,
+                  ), // Add some spacing between the image and text
+                  Text(
+                    itemName,
+                    style: TextStyle(fontWeight: FontWeight.bold),
+                  ),
+                ],
+              ),
+            ),
+          ),
           DataCell(Text(rate.toString())),
         ]),
       );
     });
+    //     DataRow(cells: [
+    //       DataCell(Text(itemName)),
+    //       DataCell(Text(rate.toString())),
+    //     ]),
+    //   );
+    // });
 
     // Update the UI with the fetched data
     setState(() {});
   }
 
-  int _sortColumnIndex = 0;
-  bool _sortAscending = true;
-
-  void _sort(int columnIndex) {
-    if (columnIndex == _sortColumnIndex) {
-      _sortAscending = !_sortAscending;
-    } else {
-      _sortColumnIndex = columnIndex;
-      _sortAscending = true;
-    }
-
-    _rows.sort((a, b) {
-      String aValue = a.cells[_sortColumnIndex].child.toString();
-      String bValue = b.cells[_sortColumnIndex].child.toString();
-      return _sortAscending
-          ? aValue.compareTo(bValue)
-          : bValue.compareTo(aValue);
-    });
-
-    setState(() {});
+  // Function to determine the image path based on the item name
+  String _getImagePath(String itemName) {
+    // Convert the item name to lowercase and remove spaces
+    String imageName = itemName.toLowerCase().replaceAll(' ', '');
+    // Return the image path
+    return 'assets/images/$imageName.jpg'; // Assuming all images have a .png extension
   }
+
+  // int _sortColumnIndex = 0;
+  // bool _sortAscending = true;
+
+  // void _sort(int columnIndex) {
+  // if (columnIndex == _sortColumnIndex) {
+  //   _sortAscending = !_sortAscending;
+  // } else {
+  //   _sortColumnIndex = columnIndex;
+  //   _sortAscending = true;
+  // }
+
+  // _rows.sort(
+  //   (a, b) {
+  //     String aValue = a.cells[_sortColumnIndex].child.toString();
+  //     String bValue = b.cells[_sortColumnIndex].child.toString();
+  //     return _sortAscending
+  //         ? aValue.compareTo(bValue)
+  //         : bValue.compareTo(aValue);
+  //   },
+  // );
+
+  // setState(() {});
+  // }
 
   @override
   Widget build(BuildContext context) {
@@ -283,9 +326,23 @@ class _DealerRatePageState extends State<DealerRatePage> {
               Expanded(
                 child: ListView(
                   children: rates.entries.map((entry) {
+                    String itemName = entry.key;
+                    dynamic itemRate = entry.value;
+                    String imagePath = _getImagePath(itemName);
+
                     return ListTile(
-                      title: Text(entry.key), // Item name
-                      subtitle: Text(entry.value.toString()), // Item rate
+                      leading: SizedBox(
+                          width: 100,
+                          height: 100,
+                          child: Image.asset(
+                            imagePath,
+                            fit: BoxFit.cover,
+                          )),
+                      title: Text(
+                        itemName,
+                        style: TextStyle(fontWeight: FontWeight.w500),
+                      ), // Item name
+                      subtitle: Text(itemRate.toString()), // Item rate
                     );
                   }).toList(),
                 ),
@@ -307,131 +364,102 @@ class _DealerRatePageState extends State<DealerRatePage> {
     );
   }
 
+  // Function to determine the image path based on the item name
+  String _getImagePath(String itemName) {
+    // Convert the item name to lowercase and remove spaces
+    String imageName = itemName.toLowerCase().replaceAll(' ', '');
+    // Return the image path
+    return 'assets/images/$imageName.jpg'; // Assuming all images have a .png extension
+  }
+
   // Function to book appointment
   Future<void> bookAppointment(
       BuildContext context, String dealerId, String username) async {
-    // DateTime? selectedDate;
-    DateTime? selectedDateTime;
-    // TimeOfDay? selectedTime;
+    // Appointment booking logic goes here
+  }
+}
 
-    // Function to show date picker
-    // Future<void> _selectDate() async {
-    Future<void> _selectDateTime() async {
-      // final DateTime? picked = await showDatePicker(
-      final DateTime? pickedDateTime = await showDatePicker(
+// Function to book appointment
+Future<void> bookAppointment(
+    BuildContext context, String dealerId, String username) async {
+  DateTime? selectedDateTime;
+
+  // Function to show date picker
+  Future<void> _selectDateTime() async {
+    final DateTime? pickedDateTime = await showDatePicker(
+      context: context,
+      initialDate: DateTime.now(),
+      firstDate: DateTime.now(),
+      lastDate: DateTime(2100),
+    );
+
+    if (pickedDateTime != null) {
+      final TimeOfDay? pickedTime = await showTimePicker(
         context: context,
-        initialDate: DateTime.now(),
-        firstDate: DateTime.now(),
-        lastDate: DateTime(2100),
+        initialTime: TimeOfDay.now(),
       );
 
-      //   if (picked != null && picked != selectedDate) {
-      //     setState(() {
-      //       selectedDate = picked;
-      //     });
-      //   }
-      // }
-
-      // // Function to show time picker
-      // Future<void> _selectTime() async {
-      //   final TimeOfDay? picked = await showTimePicker(
-      //     context: context,
-      //     initialTime: TimeOfDay.now(),
-      //   );
-
-      //   if (picked != null && picked != selectedTime) {
-      //     setState(() {
-      //       selectedTime = picked;
-      //     });
-      //   }
-      // }
-      if (pickedDateTime != null) {
-        final TimeOfDay? pickedTime = await showTimePicker(
-          context: context,
-          initialTime: TimeOfDay.now(),
+      if (pickedTime != null) {
+        selectedDateTime = DateTime(
+          pickedDateTime.year,
+          pickedDateTime.month,
+          pickedDateTime.day,
+          pickedTime.hour,
+          pickedTime.minute,
         );
-
-        if (pickedTime != null) {
-          selectedDateTime = DateTime(
-            pickedDateTime.year,
-            pickedDateTime.month,
-            pickedDateTime.day,
-            pickedTime.hour,
-            pickedTime.minute,
-          );
-        }
       }
     }
+  }
 
-    // Show date and time picker
-    await _selectDateTime();
+  // Show date and time picker
+  await _selectDateTime();
 
-    if (selectedDateTime != null) {
-      try {
-        // Check if the appointment already exists for the same user and date & time
-        QuerySnapshot<Map<String, dynamic>> existingAppointments =
-            await FirebaseFirestore.instance
-                .collection('Appointments')
-                .where('dealerId', isEqualTo: dealerId)
-                .where('userName', isEqualTo: username)
-                .where('appointmentDateTime', isEqualTo: selectedDateTime)
-                .get();
+  if (selectedDateTime != null) {
+    try {
+      // Check if the appointment already exists for the same user and date & time
+      QuerySnapshot<Map<String, dynamic>> existingAppointments =
+          await FirebaseFirestore.instance
+              .collection('Appointments')
+              .where('dealerId', isEqualTo: dealerId)
+              .where('userName', isEqualTo: username)
+              .where('appointmentDateTime', isEqualTo: selectedDateTime)
+              .get();
 
-        if (existingAppointments.docs.isEmpty) {
-          // Create a new appointment document
-          await FirebaseFirestore.instance.collection('Appointments').add({
-            'dealerId': dealerId, // ID of the dealer
-            'userName': username, // Username of the user
-            'appointmentDateTime':
-                selectedDateTime, // Date & time of the appointment
-            'timestamp':
-                FieldValue.serverTimestamp(), // Timestamp for the appointment
-          });
+      if (existingAppointments.docs.isEmpty) {
+        // Create a new appointment document
+        await FirebaseFirestore.instance.collection('Appointments').add({
+          'dealerId': dealerId, // ID of the dealer
+          'userName': username, // Username of the user
+          'appointmentDateTime':
+              selectedDateTime, // Date & time of the appointment
+          'timestamp':
+              FieldValue.serverTimestamp(), // Timestamp for the appointment
+        });
 
-          // Show success message
-          showDialog(
-            context: context,
-            builder: (context) => AlertDialog(
-              title: Text('Appointment Booked'),
-              content: Text('Your appointment has been booked successfully!'),
-              actions: [
-                TextButton(
-                  onPressed: () {
-                    Navigator.of(context).pop(); // Close the dialog
-                  },
-                  child: Text('OK'),
-                ),
-              ],
-            ),
-          );
-        } else {
-          // Show error message if appointment already exists
-          showDialog(
-            context: context,
-            builder: (context) => AlertDialog(
-              title: Text('Appointment Already Booked'),
-              content: Text(
-                  'An appointment already exists for the same user and date & time.'),
-              actions: [
-                TextButton(
-                  onPressed: () {
-                    Navigator.of(context).pop(); // Close the dialog
-                  },
-                  child: Text('OK'),
-                ),
-              ],
-            ),
-          );
-        }
-      } catch (e) {
-        print('Error booking appointment: $e');
-        // Show error message
+        // Show success message
         showDialog(
           context: context,
           builder: (context) => AlertDialog(
-            title: Text('Error'),
-            content:
-                Text('Failed to book appointment. Please try again later.'),
+            title: Text('Appointment Booked'),
+            content: Text('Your appointment has been booked successfully!'),
+            actions: [
+              TextButton(
+                onPressed: () {
+                  Navigator.of(context).pop(); // Close the dialog
+                },
+                child: Text('OK'),
+              ),
+            ],
+          ),
+        );
+      } else {
+        // Show error message if appointment already exists
+        showDialog(
+          context: context,
+          builder: (context) => AlertDialog(
+            title: Text('Appointment Already Booked'),
+            content: Text(
+                'An appointment already exists for the same user and date & time.'),
             actions: [
               TextButton(
                 onPressed: () {
@@ -443,6 +471,24 @@ class _DealerRatePageState extends State<DealerRatePage> {
           ),
         );
       }
+    } catch (e) {
+      print('Error booking appointment: $e');
+      // Show error message
+      showDialog(
+        context: context,
+        builder: (context) => AlertDialog(
+          title: Text('Error'),
+          content: Text('Failed to book appointment. Please try again later.'),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop(); // Close the dialog
+              },
+              child: Text('OK'),
+            ),
+          ],
+        ),
+      );
     }
   }
 }
