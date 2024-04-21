@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
-// import 'package:scrap_connect/screens/home_screen.dart';
+import 'package:scrap_connect/screens/home_screen.dart';
 import 'firebase_options.dart';
 import 'screens/splash_screen.dart';
 import 'utils/theme.dart';
@@ -25,10 +25,10 @@ class MyApp extends StatelessWidget {
       // theme: ThemeData(
       //     useMaterial3: true,
       //     colorScheme: ColorScheme.fromSeed(seedColor: Colors.purple)),
-      home: SplashScreen(),
-      // home: HomeScreen(
-      // username: 'harshit',
-      // ),
+      // home: SplashScreen(),
+      home: HomeScreen(
+        username: 'harshit',
+      ),
     );
   }
 }

@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import '../utils/sortingFunc.dart';
+import 'package:cloud_firestore/cloud_firestore.dart'; // Import Firestore package
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({Key? key, required this.username}) : super(key: key);
@@ -36,7 +38,7 @@ class _HomeScreenState extends State<HomeScreen> {
         items: [
           BottomNavigationBarItem(
             icon: Icon(Icons.list),
-            label: 'Rate List',
+            label: 'Market Price',
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.people),
@@ -54,21 +56,40 @@ class RateListPage extends StatefulWidget {
 }
 
 class _RateListPageState extends State<RateListPage> {
-  List<DataRow> _rows = [
-    DataRow(cells: [
-      DataCell(Text('Iron')),
-      DataCell(Text('50')),
-    ]),
-    DataRow(cells: [
-      DataCell(Text('Gold')),
-      DataCell(Text('750')),
-    ]),
-    DataRow(cells: [
-      DataCell(Text('Paper')),
-      DataCell(Text('10')),
-    ]),
-    // Add more DataRow widgets for additional items
-  ];
+  List<DataRow> _rows = [];
+
+  @override
+  void initState() {
+    super.initState();
+    _fetchData(); // Call function to fetch data when the widget is initialized
+  }
+
+  // Function to fetch data from Firestore
+  Future<void> _fetchData() async {
+    // Access Firestore document
+    DocumentSnapshot<Map<String, dynamic>> snapshot = await FirebaseFirestore
+        .instance
+        .collection('Default_Ratelist')
+        .doc('vShDY9mv8siYe3DccWmy')
+        .get();
+
+    // Extract data from document
+    Map<String, dynamic> data = snapshot.data() ?? {};
+
+    // Loop through data and populate _rows list
+    data.forEach((itemName, rate) {
+      // Create DataRow and add it to _rows list
+      _rows.add(
+        DataRow(cells: [
+          DataCell(Text(itemName)),
+          DataCell(Text(rate.toString())),
+        ]),
+      );
+    });
+
+    // Update the UI with the fetched data
+    setState(() {});
+  }
 
   int _sortColumnIndex = 0;
   bool _sortAscending = true;
@@ -81,7 +102,13 @@ class _RateListPageState extends State<RateListPage> {
       _sortAscending = true;
     }
 
-    sortDataRows(_rows, columnIndex, _sortAscending);
+    _rows.sort((a, b) {
+      String aValue = a.cells[_sortColumnIndex].child.toString();
+      String bValue = b.cells[_sortColumnIndex].child.toString();
+      return _sortAscending
+          ? aValue.compareTo(bValue)
+          : bValue.compareTo(aValue);
+    });
 
     setState(() {});
   }
@@ -94,27 +121,20 @@ class _RateListPageState extends State<RateListPage> {
         scrollDirection: Axis.vertical,
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 4.0),
-          child: Container(
+          child: SizedBox(
+            width: MediaQuery.of(context).size.width,
             child: DataTable(
               columnSpacing: 8.0,
-              sortColumnIndex: _sortColumnIndex,
-              sortAscending: _sortAscending,
               columns: [
                 DataColumn(
                   label: Text('Item'),
-                  numeric: true,
+                  numeric: false,
                   tooltip: 'Item Name',
-                  onSort: (columnIndex, ascending) {
-                    _sort(columnIndex);
-                  },
                 ),
                 DataColumn(
                   label: Text('Price'),
                   numeric: true,
                   tooltip: 'Rate of Item',
-                  onSort: (columnIndex, ascending) {
-                    _sort(columnIndex);
-                  },
                 ),
                 // Add more DataColumn widgets for additional columns
               ],
@@ -133,60 +153,57 @@ class DealersListPage extends StatefulWidget {
 }
 
 class _DealersListPageState extends State<DealersListPage> {
-  List<DataRow> _rows = [
-    DataRow(cells: [
-      DataCell(Text('1')),
-      DataCell(Text('2180')),
-      DataCell(Text('Anmol')),
-      DataCell(Text('6.9')),
-      DataCell(Text('Karnal')),
-      DataCell(Text('Karnal')),
-      DataCell(Text('Karnal')),
-    ]),
-    DataRow(cells: [
-      DataCell(Text('2')),
-      DataCell(Text('1823')),
-      DataCell(Text('ABCD')),
-      DataCell(Text('9.1')),
-      DataCell(Text('A')),
-      DataCell(Text('B')),
-      DataCell(Text('C')),
-    ]),
-    DataRow(cells: [
-      DataCell(Text('3')),
-      DataCell(Text('777')),
-      DataCell(Text('HV')),
-      DataCell(Text('9.7')),
-      DataCell(Text('K')),
-      DataCell(Text('O')),
-      DataCell(Text('!')),
-    ]),
-    DataRow(cells: [
-      DataCell(Text('4')),
-      DataCell(Text('3018')),
-      DataCell(Text('Rohit')),
-      DataCell(Text('9.9')),
-      DataCell(Text('UP')),
-      DataCell(Text('IDK')),
-      DataCell(Text('India')),
-    ]),
-    // Add more DataRow widgets for additional dealers
-  ];
+  List<DataRow> _rows = [];
 
-  int _sortColumnIndex = 0;
-  bool _sortAscending = true;
+  @override
+  void initState() {
+    super.initState();
+    _fetchData();
+  }
 
-  void _sort(int columnIndex) {
-    if (columnIndex == _sortColumnIndex) {
-      _sortAscending = !_sortAscending;
-    } else {
-      _sortColumnIndex = columnIndex;
-      _sortAscending = true;
+  Future<void> _fetchData() async {
+    try {
+      QuerySnapshot<Map<String, dynamic>> querySnapshot =
+          await FirebaseFirestore.instance.collection('Kabadi_walas').get();
+
+      querySnapshot.docs.forEach((doc) {
+        // Extract data from each document
+        String srno = (doc.data()['ID'] ?? '').toString();
+        // String id = (doc.id ?? '').toString();
+        // print(id);
+        String name = (doc.data()['Name'] ?? '').toString();
+        String rating = (doc.data()['Rating'] ?? '').toString();
+        String Contact_Number = (doc.data()['Contact_Number'] ?? '').toString();
+
+        // Create DataRow and add it to _rows list
+        _rows.add(
+          DataRow(cells: [
+            DataCell(Text(srno)),
+            // DataCell(Text(id)),
+            DataCell(
+              GestureDetector(
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) =>
+                          DealerRatePage(dealerId: doc.data()['ID'].toString()),
+                    ),
+                  );
+                },
+                child: Text(name),
+              ),
+            ),
+            DataCell(Text(rating)),
+            DataCell(Text(Contact_Number)),
+          ]),
+        );
+      });
+
+      setState(() {});
+    } catch (e) {
+      print("Error fetching data: $e");
     }
-
-    sortDataRows(_rows, columnIndex, _sortAscending);
-
-    setState(() {});
   }
 
   @override
@@ -197,66 +214,68 @@ class _DealersListPageState extends State<DealersListPage> {
         scrollDirection: Axis.vertical,
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 4.0),
-          child: DataTable(
-            columnSpacing: 8.0,
-            sortColumnIndex: _sortColumnIndex,
-            sortAscending: _sortAscending,
-            columns: [
-              DataColumn(
-                label: Text('Srno'),
-                numeric: true,
-                tooltip: 'Serial Number',
-                onSort: (columnIndex, ascending) {
-                  _sort(columnIndex);
-                },
-              ),
-              DataColumn(
-                label: Text('ID'),
-                tooltip: 'Identification Number',
-                onSort: (columnIndex, ascending) {
-                  _sort(columnIndex);
-                },
-              ),
-              DataColumn(
-                label: Text('Name'),
-                tooltip: 'Name of the Dealer',
-                onSort: (columnIndex, ascending) {
-                  _sort(columnIndex);
-                },
-              ),
-              DataColumn(
-                label: Text('Rating'),
-                numeric: true,
-                tooltip: 'Rating of the Dealer',
-                onSort: (columnIndex, ascending) {
-                  _sort(columnIndex);
-                },
-              ),
-              DataColumn(
-                label: Text('Location'),
-                tooltip: 'Location of the Dealer',
-                onSort: (columnIndex, ascending) {
-                  _sort(columnIndex);
-                },
-              ),
-              DataColumn(
-                label: Text('Location2'),
-                tooltip: 'Location of the Dealer',
-                onSort: (columnIndex, ascending) {
-                  _sort(columnIndex);
-                },
-              ),
-              DataColumn(
-                label: Text('Location3'),
-                tooltip: 'Location of the Dealer',
-                onSort: (columnIndex, ascending) {
-                  _sort(columnIndex);
-                },
-              ),
-            ],
-            rows: _rows,
+          child: SizedBox(
+            width: MediaQuery.of(context).size.width,
+            child: DataTable(
+              columnSpacing: 8.0,
+              columns: [
+                DataColumn(label: Text('Srno'), numeric: true),
+                // DataColumn(label: Text('ID')),
+                DataColumn(label: Text('Name')),
+                DataColumn(label: Text('Rating'), numeric: true),
+                DataColumn(label: Text('Contact_Number')),
+              ],
+              rows: _rows,
+            ),
           ),
         ),
+      ),
+    );
+  }
+}
+
+class DealerRatePage extends StatelessWidget {
+  final String dealerId;
+
+  DealerRatePage({required this.dealerId});
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('Dealer Rates'),
+      ),
+      body: FutureBuilder<DocumentSnapshot>(
+        future: FirebaseFirestore.instance
+            .collection('Kabadi_walas_ratelist')
+            .doc(dealerId)
+            .get(),
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return Center(child: CircularProgressIndicator());
+          }
+
+          if (snapshot.hasError) {
+            return Center(child: Text('Error: ${snapshot.error}'));
+          }
+
+          if (!snapshot.hasData || snapshot.data!.data() == null) {
+            return Center(child: Text('No rates found for this dealer.'));
+          }
+
+          // Extract rate data from the document
+          Map<String, dynamic> rates =
+              snapshot.data!.data() as Map<String, dynamic>;
+
+          return ListView(
+            children: rates.entries.map((entry) {
+              return ListTile(
+                title: Text(entry.key), // Item name
+                subtitle: Text(entry.value.toString()), // Item rate
+              );
+            }).toList(),
+          );
+        },
       ),
     );
   }
