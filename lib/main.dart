@@ -22,12 +22,15 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       theme: appTheme,
+
       // theme: ThemeData(
       //     useMaterial3: true,
       //     colorScheme: ColorScheme.fromSeed(seedColor: Colors.purple)),
+
       home: SplashScreen(),
+
       // home: HomeScreen(
-      // username: 'harshit',
+      //   username: 'harshit',
       // ),
     );
   }

@@ -97,7 +97,7 @@ class SplashScreen extends StatelessWidget {
             // )
             ElevatedButton(
               onPressed: () {
-                Navigator.pushReplacement(
+                Navigator.push(
                   context,
                   MaterialPageRoute(
                     builder: (context) => LoginScreen(),

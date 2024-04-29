@@ -31,7 +31,8 @@ class _LoginScreenState extends State<LoginScreen> {
         String username = userInfo.get('username');
 
         // Navigate to home screen after successful login
-        Navigator.pushReplacement(
+        // Navigator.pushReplacement(
+        Navigator.push(
           context,
           MaterialPageRoute(
               builder: (context) => HomeScreen(username: username)),
@@ -278,7 +279,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     // SignUp Button
                     ElevatedButton(
                       onPressed: () {
-                        Navigator.push(
+                        Navigator.pushReplacement(
                           context,
                           MaterialPageRoute(
                               builder: (context) => SignUpScreen()),
