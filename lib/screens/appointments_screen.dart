@@ -1,113 +1,139 @@
-// ignore_for_file: depend_on_referenced_packages
-
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart'; // Import the intl package for date formatting
+import 'package:intl/intl.dart';
 import '../utils/extractingAppointments.dart';
 
-class AppointmentsScreen extends StatelessWidget {
+class AppointmentsScreen extends StatefulWidget {
   final String currentUserName;
 
   AppointmentsScreen({required this.currentUserName});
+
+  @override
+  _AppointmentsScreenState createState() => _AppointmentsScreenState();
+}
+
+class _AppointmentsScreenState extends State<AppointmentsScreen> {
+  String _selectedStatus = 'All';
+  late List<Map<String, dynamic>> _appointments;
+  Map<String, String> _dealerNames = {};
+
+  @override
+  void initState() {
+    super.initState();
+    _fetchDealerNames();
+  }
+
+  void _fetchDealerNames() async {
+    QuerySnapshot<Map<String, dynamic>> dealerSnapshot =
+        await FirebaseFirestore.instance.collection('Kabadi_walas').get();
+
+    dealerSnapshot.docs.forEach((doc) {
+      _dealerNames[doc['ID'].toString()] = doc['Name'];
+    });
+
+    print(_dealerNames);
+    setState(() {});
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: Text('Appointments'),
+        actions: [
+          PopupMenuButton(
+            onSelected: (value) {
+              setState(() {
+                _selectedStatus = value.toString();
+              });
+            },
+            itemBuilder: (BuildContext context) => <PopupMenuEntry>[
+              PopupMenuItem(
+                value: 'All',
+                child: Text('All'),
+              ),
+              PopupMenuItem(
+                value: 'Pending',
+                child: Text('Pending'),
+              ),
+              PopupMenuItem(
+                value: 'Declined',
+                child: Text('Declined'),
+              ),
+              PopupMenuItem(
+                value: 'Approved',
+                child: Text('Approved'),
+              ),
+            ],
+          ),
+        ],
       ),
       body: FutureBuilder<List<Map<String, dynamic>>>(
-        future:
-            ExtractAppointments.getAppointmentsForCurrentUser(currentUserName),
+        future: ExtractAppointments.getAppointmentsForCurrentUser(
+            widget.currentUserName),
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return Center(child: CircularProgressIndicator());
           } else if (snapshot.hasError) {
             return Center(child: Text('Error: ${snapshot.error}'));
           } else {
-            List<Map<String, dynamic>> appointments = snapshot.data ?? [];
+            _appointments = snapshot.data ?? [];
 
-            List<Map<String, dynamic>> upcomingAppointments = [];
-            List<Map<String, dynamic>> pastAppointments = [];
+            // Filter appointments based on selected status
+            if (_selectedStatus != 'All') {
+              _appointments = _appointments.where((appointment) {
+                String status = _getAppointmentStatus(appointment['status']);
+                return status == _selectedStatus;
+              }).toList();
+            }
 
-            // Separate appointments into upcoming and past
-            DateTime now = DateTime.now();
-            appointments.forEach((appointment) {
-              Timestamp appointmentDateTime =
-                  appointment['appointmentDateTime'];
-              DateTime dateTime = appointmentDateTime.toDate();
-              if (dateTime.isAfter(now)) {
-                upcomingAppointments.add(appointment);
-              } else {
-                pastAppointments.add(appointment);
-              }
-            });
+            return ListView.builder(
+              itemCount: _appointments.length,
+              itemBuilder: (context, index) {
+                Map<String, dynamic> appointment = _appointments[index];
+                Timestamp appointmentDateTime =
+                    appointment['appointmentDateTime'];
+                String formattedDateTime = DateFormat('MMM d, y H:mm a')
+                    .format(appointmentDateTime.toDate());
 
-            return Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                if (upcomingAppointments.isNotEmpty) ...[
-                  Text(
-                    'Upcoming Appointments',
-                    style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-                  ),
-                  SizedBox(height: 8),
-                  Expanded(
-                    child: ListView.builder(
-                      itemCount: upcomingAppointments.length,
-                      itemBuilder: (context, index) {
-                        Map<String, dynamic> appointment =
-                            upcomingAppointments[index];
-                        Timestamp appointmentDateTime =
-                            appointment['appointmentDateTime'];
-                        String formattedDateTime = DateFormat('MMM d, y H:mm a')
-                            .format(appointmentDateTime.toDate());
-                        return ListTile(
-                          title: Text(formattedDateTime),
-                          subtitle:
-                              Text('Dealer ID: ${appointment['dealerId']}'),
-                          // Add more details as needed
-                        );
-                      },
-                    ),
-                  ),
-                  SizedBox(height: 20),
-                ],
-                if (pastAppointments.isNotEmpty) ...[
-                  Text(
-                    'Past Appointments',
-                    style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-                  ),
-                  SizedBox(height: 8),
-                  Expanded(
-                    child: ListView.builder(
-                      itemCount: pastAppointments.length,
-                      itemBuilder: (context, index) {
-                        Map<String, dynamic> appointment =
-                            pastAppointments[index];
-                        Timestamp appointmentDateTime =
-                            appointment['appointmentDateTime'];
-                        String formattedDateTime = DateFormat('MMM d, y H:mm a')
-                            .format(appointmentDateTime.toDate());
-                        return ListTile(
-                          title: Text(formattedDateTime),
-                          subtitle:
-                              Text('Dealer ID: ${appointment['dealerId']}'),
-                          // Add more details as needed
-                        );
-                      },
-                    ),
-                  ),
-                ],
-                if (upcomingAppointments.isEmpty &&
-                    pastAppointments.isEmpty) ...[
-                  Center(child: Text('No appointments found.')),
-                ],
-              ],
+                String status = _getAppointmentStatus(appointment['status']);
+                String appointmentType =
+                    _getAppointmentType(appointmentDateTime);
+
+                String dealerId = appointment['dealerId'];
+                String dealerName = _dealerNames[dealerId] ?? 'Unknown';
+
+                return ListTile(
+                  title: Text(formattedDateTime),
+                  subtitle: Text(
+                      // 'Dealer Name: $dealerName - Status: $status - $appointmentType'),
+                      'Dealer Name: $dealerName \nStatus: $status \n$appointmentType'),
+                  trailing: Text(status),
+                );
+              },
             );
           }
         },
       ),
     );
+  }
+
+  String _getAppointmentStatus(String status) {
+    switch (status) {
+      case 'pending':
+        return 'Pending';
+      case 'declined':
+        return 'Declined';
+      case 'approved':
+        return 'Approved';
+      default:
+        return 'Unknown';
+    }
+  }
+
+  String _getAppointmentType(Timestamp appointmentDateTime) {
+    DateTime now = DateTime.now();
+    DateTime dateTime = appointmentDateTime.toDate();
+    return dateTime.isAfter(now) ? 'Upcoming' : 'Past';
   }
 }

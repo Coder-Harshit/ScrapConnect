@@ -56,6 +56,7 @@ Future<void> bookAppointment(
               selectedDateTime, // Date & time of the appointment
           'timestamp':
               FieldValue.serverTimestamp(), // Timestamp for the appointment
+          'status': 'pending',
         });
 
         // Show success message
