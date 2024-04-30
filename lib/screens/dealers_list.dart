@@ -125,34 +125,32 @@ class _DealerRatePageState extends State<DealerRatePage> {
             return Center(child: Text('No rates found for this dealer.'));
           }
 
-          // Extract rate data from the document
           Map<String, dynamic> rates =
               snapshot.data!.data() as Map<String, dynamic>;
+          List<Map<String, dynamic>> items =
+              List<Map<String, dynamic>>.from(rates['items'] ?? []);
+          // Extract rate data from the document
+          // Map<String, dynamic> rates =
+          // snapshot.data!.data() as Map<String, dynamic>;
 
           return Column(
             children: [
               Expanded(
-                child: ListView(
-                  children: rates.entries.map((entry) {
-                    String itemName = entry.key;
-                    dynamic itemRate = entry.value;
-                    String imagePath = _getImagePath(itemName);
+                child: ListView.builder(
+                  itemCount: items.length,
+                  itemBuilder: (context, index) {
+                    String itemName = items[index].keys.first;
+                    dynamic itemRate = items[index].values.first;
+                    String imgPath = _getImagePath(itemName);
 
                     return ListTile(
-                      leading: SizedBox(
-                          width: 100,
-                          height: 100,
-                          child: Image.asset(
-                            imagePath,
-                            fit: BoxFit.cover,
-                          )),
-                      title: Text(
-                        itemName,
-                        style: TextStyle(fontWeight: FontWeight.w500),
-                      ), // Item name
-                      subtitle: Text(itemRate.toString()), // Item rate
+                      leading: imgPath.isNotEmpty
+                          ? Image.asset(imgPath)
+                          : SizedBox(),
+                      title: Text(itemName),
+                      subtitle: Text(itemRate.toString()),
                     );
-                  }).toList(),
+                  },
                 ),
               ),
               Padding(
