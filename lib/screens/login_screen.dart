@@ -127,7 +127,6 @@ class _LoginScreenState extends State<LoginScreen> {
                         ),
                       ],
                     ),
-
                     // Password Column
                     Column(
                       crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -183,7 +182,7 @@ class _LoginScreenState extends State<LoginScreen> {
                       ],
                     ),
 
-                    SizedBox(height: 50),
+                    SizedBox(height: 10),
 
                     // Login Button
                     ElevatedButton(
@@ -208,56 +207,56 @@ class _LoginScreenState extends State<LoginScreen> {
                       ),
                     ),
 
-                    // Divider
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Expanded(
-                          child: Divider(color: Colors.white54),
-                        ),
-                        Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 16.0),
-                          child: Text(
-                            'OR',
-                            style: TextStyle(
-                                fontSize: 18.0, color: Colors.white54),
-                          ),
-                        ),
-                        Expanded(
-                          child: Divider(color: Colors.white54),
-                        ),
-                      ],
-                    ),
+                    // // Divider
+                    // Row(
+                    //   mainAxisAlignment: MainAxisAlignment.center,
+                    //   children: [
+                    //     Expanded(
+                    //       child: Divider(color: Colors.white54),
+                    //     ),
+                    //     Padding(
+                    //       padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                    //       child: Text(
+                    //         'OR',
+                    //         style: TextStyle(
+                    //             fontSize: 18.0, color: Colors.white54),
+                    //       ),
+                    //     ),
+                    //     Expanded(
+                    //       child: Divider(color: Colors.white54),
+                    //     ),
+                    //   ],
+                    // ),
 
-                    // Login with Google Button
-                    ElevatedButton(
-                      onPressed: () {},
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: Color.fromRGBO(143, 94, 223, 1.0),
-                        foregroundColor: Colors.white,
-                        elevation: 10.0,
-                        padding: EdgeInsets.symmetric(
-                            horizontal: 35, vertical: 13.5),
-                      ),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Image.asset('assets/images/Search_GSA.original.png',
-                              width: 24),
-                          SizedBox(width: 10),
-                          Text(
-                            "Login with GOOGLE",
-                            style: TextStyle(
-                              fontWeight: FontWeight.bold,
-                              fontSize: 18.5,
-                              fontFamily: 'MonaSans',
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
+                    // // Login with Google Button
+                    // ElevatedButton(
+                    //   onPressed: () {},
+                    //   style: ElevatedButton.styleFrom(
+                    //     backgroundColor: Color.fromRGBO(143, 94, 223, 1.0),
+                    //     foregroundColor: Colors.white,
+                    //     elevation: 10.0,
+                    //     padding: EdgeInsets.symmetric(
+                    //         horizontal: 35, vertical: 13.5),
+                    //   ),
+                    //   child: Row(
+                    //     mainAxisAlignment: MainAxisAlignment.center,
+                    //     children: [
+                    //       Image.asset('assets/images/Search_GSA.original.png',
+                    //           width: 24),
+                    //       SizedBox(width: 10),
+                    //       Text(
+                    //         "Login with GOOGLE",
+                    //         style: TextStyle(
+                    //           fontWeight: FontWeight.bold,
+                    //           fontSize: 18.5,
+                    //           fontFamily: 'MonaSans',
+                    //         ),
+                    //       ),
+                    //     ],
+                    //   ),
+                    // ),
 
-                    SizedBox(height: 100),
+                    SizedBox(height: 200),
 
                     // Don't have an account Text
                     Center(

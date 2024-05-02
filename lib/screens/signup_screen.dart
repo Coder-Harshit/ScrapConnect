@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:scrap_connect/screens/login_screen.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:scrap_connect/utils/signupGoogle.dart';
 
 class SignUpScreen extends StatefulWidget {
   const SignUpScreen({super.key});
@@ -15,6 +16,8 @@ class _SignUpScreenState extends State<SignUpScreen> {
   final TextEditingController passwordController = TextEditingController();
   final TextEditingController usernameController = TextEditingController();
   bool _obscureText = true;
+
+  // final SignUpWithGoogle _signUpWithGoogle = SignUpWithGoogle();
 
   Future<void> _signUpWithEmailAndPassword(
       String email, String password, String username) async {
@@ -286,64 +289,70 @@ class _SignUpScreenState extends State<SignUpScreen> {
                     ),
                   ),
                 ),
-                SizedBox(height: 5),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Expanded(
-                      child: Divider(
-                        color: Colors.white54,
-                      ),
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 16.0),
-                      child: Text(
-                        'OR',
-                        style: TextStyle(
-                          fontSize: 18.0,
-                          color: Colors.white54,
-                        ),
-                      ),
-                    ),
-                    Expanded(
-                      child: Divider(
-                        color: Colors.white54,
-                      ),
-                    ),
-                  ],
-                ),
-                SizedBox(height: 5),
-                ElevatedButton(
-                  onPressed: () {
-                    // Implement sign up with Google
-                  },
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Color.fromRGBO(143, 94, 223, 1.0),
-                    foregroundColor: Colors.white,
-                    elevation: 10.0,
-                    padding:
-                        EdgeInsets.symmetric(horizontal: 35, vertical: 13.5),
-                  ),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Image.asset(
-                        'assets/images/Search_GSA.original.png',
-                        width: 24,
-                      ),
-                      SizedBox(width: 10),
-                      Text(
-                        "Signup with GOOGLE",
-                        style: TextStyle(
-                          fontWeight: FontWeight.bold,
-                          fontSize: 18.5,
-                          fontFamily: 'MonaSans',
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-                SizedBox(height: 110),
+                // SizedBox(height: 5),
+                // Row(
+                //   mainAxisAlignment: MainAxisAlignment.center,
+                //   children: [
+                //     Expanded(
+                //       child: Divider(
+                //         color: Colors.white54,
+                //       ),
+                //     ),
+                //     Padding(
+                //       padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                //       child: Text(
+                //         'OR',
+                //         style: TextStyle(
+                //           fontSize: 18.0,
+                //           color: Colors.white54,
+                //         ),
+                //       ),
+                //     ),
+                //     Expanded(
+                //       child: Divider(
+                //         color: Colors.white54,
+                //       ),
+                //     ),
+                //   ],
+                // ),
+                // SizedBox(height: 5),
+                // ElevatedButton(
+                //   onPressed: () {
+                //     // // Implement sign up with Google
+                //     // final user = await _signUpWithGoogle.signUpWithGoogle();
+                //     // if (user != null) {
+                //     //   print("XOXOXOXOXOXOXOXOXOXOOX");
+                //     // } else {
+                //     //   print("===>this");
+                //     // }
+                //   },
+                //   style: ElevatedButton.styleFrom(
+                //     backgroundColor: Color.fromRGBO(143, 94, 223, 1.0),
+                //     foregroundColor: Colors.white,
+                //     elevation: 10.0,
+                //     padding:
+                //         EdgeInsets.symmetric(horizontal: 35, vertical: 13.5),
+                //   ),
+                // child: Row(
+                //   mainAxisAlignment: MainAxisAlignment.center,
+                //   children: [
+                //     Image.asset(
+                //       'assets/images/Search_GSA.original.png',
+                //       width: 24,
+                //     ),
+                //     SizedBox(width: 10),
+                //     Text(
+                //       "Signup with GOOGLE",
+                //       style: TextStyle(
+                //         fontWeight: FontWeight.bold,
+                //         fontSize: 18.5,
+                //         fontFamily: 'MonaSans',
+                //       ),
+                // ),
+                // ],
+                // ),
+                // ),
+                SizedBox(height: 200),
                 Center(
                   child: Text(
                     "Already have an Account?",

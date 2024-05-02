@@ -3,7 +3,7 @@ import 'package:cloud_firestore/cloud_firestore.dart'; // Import Firestore packa
 
 // Function to book appointment
 Future<void> bookAppointment(
-    BuildContext context, String dealerId, String username) async {
+    BuildContext context, String dealerId, String mailID) async {
   DateTime? selectedDateTime;
 
   // Function to show date picker
@@ -43,7 +43,8 @@ Future<void> bookAppointment(
           await FirebaseFirestore.instance
               .collection('Appointments')
               .where('dealerId', isEqualTo: dealerId)
-              .where('userName', isEqualTo: username)
+              // .where('userName', isEqualTo: username)+
+              .where('email', isEqualTo: mailID)
               .where('appointmentDateTime', isEqualTo: selectedDateTime)
               .get();
 
@@ -51,7 +52,8 @@ Future<void> bookAppointment(
         // Create a new appointment document
         await FirebaseFirestore.instance.collection('Appointments').add({
           'dealerId': dealerId, // ID of the dealer
-          'userName': username, // Username of the user
+          // 'userName': username, // Username of the user
+          'email': mailID, // Username of the user
           'appointmentDateTime':
               selectedDateTime, // Date & time of the appointment
           'timestamp':

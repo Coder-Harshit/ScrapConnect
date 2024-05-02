@@ -11,7 +11,6 @@ class DealersListPage extends StatefulWidget {
 
 class _DealersListPageState extends State<DealersListPage> {
   List<DataRow> _rows = [];
-
   @override
   void initState() {
     super.initState();
@@ -23,13 +22,22 @@ class _DealersListPageState extends State<DealersListPage> {
       QuerySnapshot<Map<String, dynamic>> querySnapshot =
           await FirebaseFirestore.instance.collection('Kabadi_walas').get();
 
+      QuerySnapshot<Map<String, dynamic>> querySnapshot2 =
+          await FirebaseFirestore.instance.collection('users').get();
+
       querySnapshot.docs.forEach((doc) {
         // Extract data from each document
         String srno = (doc.data()['ID'] ?? '').toString();
         String name = (doc.data()['Name'] ?? '').toString();
         String rating = (doc.data()['Rating'] ?? '').toString();
         String Contact_Number = (doc.data()['Contact_Number'] ?? '').toString();
+        String mail = '';
 
+        querySnapshot2.docs.forEach((element) {
+          if (element.data()['username'] == widget.username) {
+            mail = element.data()['email'];
+          }
+        });
         // Create DataRow and add it to _rows list
         _rows.add(
           DataRow(cells: [
@@ -44,6 +52,7 @@ class _DealersListPageState extends State<DealersListPage> {
                       builder: (context) => DealerRatePage(
                         dealerId: doc.data()['ID'].toString(),
                         username: widget.username,
+                        mailID: mail,
                       ),
                     ),
                   );
@@ -93,8 +102,10 @@ class _DealersListPageState extends State<DealersListPage> {
 class DealerRatePage extends StatefulWidget {
   final String dealerId;
   final String username;
+  final String mailID;
 
-  DealerRatePage({required this.dealerId, required this.username});
+  DealerRatePage(
+      {required this.dealerId, required this.username, required this.mailID});
 
   @override
   State<DealerRatePage> createState() => _DealerRatePageState();
@@ -145,8 +156,21 @@ class _DealerRatePageState extends State<DealerRatePage> {
 
                     return ListTile(
                       leading: imgPath.isNotEmpty
-                          ? Image.asset(imgPath)
-                          : SizedBox(),
+                          ? Image.asset(
+                              imgPath,
+                              width: 64, // Adjust width as needed
+                              height: 64, // Adjust height as needed
+                              fit: BoxFit.fill, // Use cover fit
+                            )
+                          : Container(
+                              width: 32, // Adjust width as needed
+                              height: 32, // Adjust height as needed
+                              color: Colors.grey, // Placeholder color
+                              child: Icon(
+                                Icons.image, // Placeholder icon
+                                color: Colors.white, // Icon color
+                              ),
+                            ),
                       title: Text(itemName),
                       subtitle: Text(itemRate.toString()),
                     );
@@ -158,7 +182,7 @@ class _DealerRatePageState extends State<DealerRatePage> {
                 child: ElevatedButton(
                   onPressed: () {
                     // Book appointment logic
-                    bookAppointment(context, widget.dealerId, widget.username);
+                    bookAppointment(context, widget.dealerId, widget.mailID);
                   },
                   child: Text("BOOK APPOINTMENT"),
                 ),

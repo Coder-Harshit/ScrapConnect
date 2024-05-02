@@ -3,7 +3,9 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 class ExtractAppointments {
   // Function to fetch appointments for the current user
   static Future<List<Map<String, dynamic>>> getAppointmentsForCurrentUser(
-      String currentUserName) async {
+      String currentUserName, String mailID) async {
+    print("===>");
+    print(mailID);
     // Initialize Firestore
     FirebaseFirestore firestore = FirebaseFirestore.instance;
 
@@ -11,9 +13,10 @@ class ExtractAppointments {
       // Query appointments collection for documents where userName is equal to currentUserName
       QuerySnapshot querySnapshot = await firestore
           .collection('Appointments')
-          .where('userName', isEqualTo: currentUserName)
+          // .where('userName', isEqualTo: currentUserName)
+          .where('email', isEqualTo: mailID)
           .get();
-
+      // print(querySnapshot.docs.last.data());
       // Extract appointment data from documents
       List<Map<String, dynamic>> appointments = [];
       querySnapshot.docs.forEach((doc) {

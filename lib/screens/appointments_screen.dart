@@ -17,10 +17,34 @@ class _AppointmentsScreenState extends State<AppointmentsScreen> {
   late List<Map<String, dynamic>> _appointments;
   Map<String, String> _dealerNames = {};
 
+  String mailID = '';
   @override
   void initState() {
     super.initState();
     _fetchDealerNames();
+    _fetchUserEmail(); // Call the method to fetch user email
+  }
+
+  void _fetchUserEmail() async {
+    try {
+      // Fetch the user document from Firestore based on email
+      QuerySnapshot<Map<String, dynamic>> userSnapshot = await FirebaseFirestore
+          .instance
+          .collection('users')
+          .where('username', isEqualTo: widget.currentUserName)
+          .get();
+
+      // Check if any documents are returned
+      if (userSnapshot.docs.isNotEmpty) {
+        // Get the first document (assuming email is unique)
+        mailID = userSnapshot.docs.first.data()['email'] ?? '';
+        print(mailID.toString());
+      } else {
+        print('No user found with email: ${widget.currentUserName}');
+      }
+    } catch (e) {
+      print("Error fetching user email: $e");
+    }
   }
 
   void _fetchDealerNames() async {
@@ -70,7 +94,7 @@ class _AppointmentsScreenState extends State<AppointmentsScreen> {
       ),
       body: FutureBuilder<List<Map<String, dynamic>>>(
         future: ExtractAppointments.getAppointmentsForCurrentUser(
-            widget.currentUserName),
+            widget.currentUserName, mailID),
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return Center(child: CircularProgressIndicator());
