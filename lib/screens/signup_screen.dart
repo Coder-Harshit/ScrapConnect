@@ -36,7 +36,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
     try {
       UserCredential userCredential = await FirebaseAuth.instance
           .createUserWithEmailAndPassword(email: email, password: password);
-
+      int parsedContact = int.parse(contact);
       // Save additional user information to Firestore
       await FirebaseFirestore.instance
           .collection('users')
@@ -45,7 +45,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
         'email': email,
         'username': username,
         'city': city,
-        'contact': contact,
+        'contact': parsedContact,
         'landmark': landmark,
         'state': state,
         // Add more fields as needed
