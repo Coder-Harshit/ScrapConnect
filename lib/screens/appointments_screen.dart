@@ -13,6 +13,10 @@ class AppointmentsScreen extends StatefulWidget {
 }
 
 class _AppointmentsScreenState extends State<AppointmentsScreen> {
+  void refreshAppointments() {
+    setState(() {});
+  }
+
   String _selectedStatus = 'All';
   late List<Map<String, dynamic>> _appointments;
   Map<String, String> _dealerNames = {};
@@ -186,7 +190,34 @@ class _AppointmentsScreenState extends State<AppointmentsScreen> {
     return dateTime.isAfter(now) ? 'Upcoming' : 'Past';
   }
 
+  // void _markAppointmentAsRated(Map<String, dynamic> appointment) async {
+  //   try {
+  //     Timestamp timestamp = appointment['timestamp'];
+  //     if (timestamp != null) {
+  //       QuerySnapshot<Map<String, dynamic>> appointmentSnapshot =
+  //           await FirebaseFirestore.instance
+  //               .collection('appointments')
+  //               .where('timestamp', isEqualTo: timestamp)
+  //               .limit(1)
+  //               .get();
+  //       if (appointmentSnapshot.docs.isNotEmpty) {
+  //         DocumentSnapshot<Map<String, dynamic>> appointmentDocument =
+  //             appointmentSnapshot.docs.first;
+  //         await appointmentDocument.reference.update({'rated': true});
+  //         print('Appointment marked as rated.');
+  //       } else {
+  //         print('Error: Appointment not found.');
+  //       }
+  //     } else {
+  //       print('Error: Timestamp not found.');
+  //     }
+  //   } catch (e) {
+  //     print('Error marking appointment as rated: $e');
+  //   }
+  // }
+
   void _showAppointmentDetailsDialog(Map<String, dynamic> appointment) {
+    bool isRated = appointment['rated'] ?? false;
     showDialog(
       context: context,
       builder: (BuildContext context) {
@@ -226,11 +257,24 @@ class _AppointmentsScreenState extends State<AppointmentsScreen> {
               Row(
                 children: [
                   Container(
-                    child: RatingWidget(
-                      onChanged: (double rating) {
-                        _updateDealerRating(appointment['dealerId'], rating);
-                      },
-                    ),
+                    child: isRated
+                        ? Text('Already Rated')
+                        : RatingWidget(
+                            onChanged: (double rating) {
+                              setState(() {
+                                appointment['rated'] = true;
+                              });
+                              _updateDealerRating(
+                                appointment['dealerId'],
+                                rating,
+                                appointment,
+                                refreshAppointments,
+                              );
+
+                              // Mark the appointment as rated
+                              // _markAppointmentAsRated(appointment);
+                            },
+                          ),
                   ),
                 ],
               ),
@@ -250,7 +294,8 @@ class _AppointmentsScreenState extends State<AppointmentsScreen> {
   }
 }
 
-void _updateDealerRating(String dealerId, double rating) async {
+void _updateDealerRating(String dealerId, double rating,
+    Map<String, dynamic> appointment, Function refreshCallback) async {
   try {
     // Parse dealerId to an integer, providing a default value of 0 if parsing fails
     int dealerIdAsInt = int.tryParse(dealerId) ?? 0;
@@ -276,7 +321,31 @@ void _updateDealerRating(String dealerId, double rating) async {
         'Rating': newRating,
         'Number_of_Ratings': numberOfRatings + 1,
       });
+      QuerySnapshot<Map<String, dynamic>> appointmentSnapshot =
+          await FirebaseFirestore.instance
+              .collection('Appointments')
+              .where('dealerId', isEqualTo: dealerId)
+              .where('appointmentDateTime',
+                  isEqualTo: appointment['appointmentDateTime'])
+              .get();
 
+      // print("=====>>>>>");
+      // print(appointmentSnapshot.docs.toString());
+      if (appointmentSnapshot.docs.isNotEmpty) {
+        // Get the document reference of the first document (assuming dealerId and timestamp uniquely identify an appointment)
+        DocumentReference appointmentRef =
+            appointmentSnapshot.docs.first.reference;
+
+        // Update the 'rated' field in the appointment document
+        await appointmentRef.update({'rated': true});
+
+        // Optionally, you can show a confirmation message or update the UI
+
+        // Reload appointments after rating
+        refreshCallback();
+      } else {
+        print('Appointment not found.');
+      }
       // Optionally, you can show a confirmation message or update the UI
     } else {
       print('Dealer with ID $dealerIdAsInt not found.');
@@ -304,15 +373,25 @@ class _RatingWidgetState extends State<RatingWidget> {
       children: List.generate(5, (index) {
         return IconButton(
           onPressed: () {
+            if (_rating != 0) {
+              // If already rated, do nothing
+              print("Appointment already rated");
+              return;
+            }
             setState(() {
               _rating = index + 1;
-              widget.onChanged(_rating);
             });
+            widget.onChanged(_rating);
           },
-          icon: Icon(
-            index < _rating ? Icons.star : Icons.star_border,
-            color: Colors.orange,
-          ),
+          icon: _rating >= index + 1
+              ? Icon(
+                  Icons.star,
+                  color: Colors.orange,
+                )
+              : Icon(
+                  Icons.star_border,
+                  color: Colors.orange,
+                ),
         );
       }),
     );
