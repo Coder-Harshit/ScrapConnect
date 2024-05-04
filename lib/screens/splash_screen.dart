@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:scrap_connect/main.dart';
 import 'login_screen.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class SplashScreen extends StatelessWidget {
   const SplashScreen({super.key});
@@ -49,6 +51,49 @@ class SplashScreen extends StatelessWidget {
                   style: Theme.of(context).primaryTextTheme.displayMedium,
                   textAlign: TextAlign.center,
                 ),
+              ),
+              ElevatedButton(
+                onPressed: () {
+                  // Show language selection dialog
+                  showDialog(
+                    context: context,
+                    builder: (BuildContext context) {
+                      return AlertDialog(
+                        title:
+                            Text(AppLocalizations.of(context)!.changeLanguage),
+                        content: Column(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            ElevatedButton(
+                              onPressed: () {
+                                // Change language to Hindi
+                                MyApp.setLocale(
+                                    context, const Locale('hi', ''));
+                                Navigator.pop(context); // Close dialog
+                              },
+                              child: Text(AppLocalizations.of(context)!.hindi),
+                            ),
+                            ElevatedButton(
+                              onPressed: () {
+                                // Change language to English
+                                MyApp.setLocale(
+                                    context, const Locale('en', ''));
+                                Navigator.pop(context); // Close dialog
+                              },
+                              child:
+                                  Text(AppLocalizations.of(context)!.english),
+                            ),
+                          ],
+                        ),
+                      );
+                    },
+                  );
+                },
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.white, // Change button color
+                  foregroundColor: Colors.black, // Change text color
+                ),
+                child: Text(AppLocalizations.of(context)!.language),
               ),
               Image(
                 image: AssetImage('assets/images/Logo.png'),
