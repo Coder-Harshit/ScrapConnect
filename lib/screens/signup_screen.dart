@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:scrap_connect/screens/login_screen.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:scrap_connect/utils/generateCitiesByState.dart';
 
 class SignUpScreen extends StatefulWidget {
   const SignUpScreen({super.key});
@@ -14,12 +16,23 @@ class _SignUpScreenState extends State<SignUpScreen> {
   final TextEditingController emailController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
   final TextEditingController usernameController = TextEditingController();
+  final TextEditingController cityController = TextEditingController();
+  final TextEditingController contactController = TextEditingController();
+  final TextEditingController landmarkController = TextEditingController();
+  final TextEditingController stateController = TextEditingController();
   bool _obscureText = true;
 
   // final SignUpWithGoogle _signUpWithGoogle = SignUpWithGoogle();
 
   Future<void> _signUpWithEmailAndPassword(
-      String email, String password, String username) async {
+    String email,
+    String password,
+    String username,
+    String city,
+    String contact,
+    String landmark,
+    String state,
+  ) async {
     try {
       UserCredential userCredential = await FirebaseAuth.instance
           .createUserWithEmailAndPassword(email: email, password: password);
@@ -31,6 +44,10 @@ class _SignUpScreenState extends State<SignUpScreen> {
           .set({
         'email': email,
         'username': username,
+        'city': city,
+        'contact': contact,
+        'landmark': landmark,
+        'state': state,
         // Add more fields as needed
       });
 
@@ -51,6 +68,49 @@ class _SignUpScreenState extends State<SignUpScreen> {
       );
     }
   }
+
+// Add a list of states and cities
+  List<String> states = [
+    'Andhra Pradesh',
+    'Arunachal Pradesh',
+    'Assam',
+    'Bihar',
+    'Chhattisgarh',
+    'Goa',
+    'Gujarat',
+    'Haryana',
+    'Himachal Pradesh',
+    'Jharkhand',
+    'Karnataka',
+    'Kerala',
+    'Madhya Pradesh',
+    'Maharashtra',
+    'Manipur',
+    'Meghalaya',
+    'Mizoram',
+    'Nagaland',
+    'Odisha',
+    'Punjab',
+    'Rajasthan',
+    'Sikkim',
+    'Tamil Nadu',
+    'Telangana',
+    'Tripura',
+    'Uttar Pradesh',
+    'Uttarakhand',
+    'West Bengal',
+    'Andaman and Nicobar Islands',
+    'Chandigarh',
+    'Dadra and Nagar Haveli and Daman and Diu',
+    'Delhi',
+    'Lakshadweep',
+    'Puducherry'
+  ]; // Add your states
+
+  Map<String, List<String>> citiesByState = generateCitiesByState();
+
+  String selectedState = 'Rajasthan'; // Default selected state
+  String selectedCity = 'Kota'; // Default selected city
 
   @override
   Widget build(BuildContext context) {
@@ -139,6 +199,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                     SizedBox(height: 12.5),
                   ],
                 ),
+
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
@@ -171,6 +232,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                       ),
                       child: TextField(
                         controller: emailController,
+                        keyboardType: TextInputType.emailAddress,
                         style: TextStyle(
                           color: Colors.white,
                           fontFamily: 'FiraCode',
@@ -197,6 +259,269 @@ class _SignUpScreenState extends State<SignUpScreen> {
                     SizedBox(height: 12.5),
                   ],
                 ),
+
+//
+
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    // State dropdown
+                    Container(
+                      margin: EdgeInsets.fromLTRB(0, 5, 0, 5),
+                      child: Text(
+                        "State",
+                        style: Theme.of(context)
+                            .primaryTextTheme
+                            .headlineSmall
+                            ?.merge(
+                              TextStyle(
+                                fontFamily: 'Comic',
+                                color: Colors.white,
+                              ),
+                            ),
+                      ),
+                    ),
+                    SizedBox(height: 2),
+                    Container(
+                      decoration: BoxDecoration(
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.black.withOpacity(0.1),
+                            spreadRadius: 5,
+                            blurRadius: 5,
+                            offset: Offset(0, 3),
+                          ),
+                        ],
+                        borderRadius: BorderRadius.circular(10.0),
+                      ),
+                      child: DropdownButtonFormField<String>(
+                        value: selectedState,
+                        onChanged: (String? newValue) {
+                          setState(() {
+                            selectedState = newValue!;
+                            // Reset selected city when state changes
+                            selectedCity = citiesByState[selectedState]![0];
+                          });
+                        },
+                        items: states.map((String state) {
+                          return DropdownMenuItem<String>(
+                            value: state,
+                            child: SizedBox(
+                              width: 150,
+                              child: Text(
+                                state,
+                                overflow: TextOverflow.ellipsis,
+                                style: TextStyle(
+                                  color: selectedState == state
+                                      ? Colors.amber
+                                      : Colors.black,
+                                ),
+                              ),
+                            ),
+                          );
+                        }).toList(),
+                        decoration: InputDecoration(
+                          contentPadding: EdgeInsets.all(20),
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(10.0),
+                            borderSide: BorderSide.none,
+                          ),
+                          filled: true,
+                          fillColor: Color.fromRGBO(143, 94, 223, 1.0),
+                        ),
+                      ),
+                    ),
+                    SizedBox(height: 12.5),
+                  ],
+                ),
+// City dropdown
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    Container(
+                      margin: EdgeInsets.fromLTRB(0, 5, 0, 5),
+                      child: Text(
+                        "City",
+                        style: Theme.of(context)
+                            .primaryTextTheme
+                            .headlineSmall
+                            ?.merge(
+                              TextStyle(
+                                fontFamily: 'Comic',
+                                color: Colors.white,
+                              ),
+                            ),
+                      ),
+                    ),
+                    SizedBox(height: 2),
+                    Container(
+                      decoration: BoxDecoration(
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.black.withOpacity(0.1),
+                            spreadRadius: 5,
+                            blurRadius: 5,
+                            offset: Offset(0, 3),
+                          ),
+                        ],
+                        borderRadius: BorderRadius.circular(10.0),
+                      ),
+                      child: DropdownButtonFormField<String>(
+                        value: selectedCity,
+                        onChanged: (String? newValue) {
+                          setState(() {
+                            selectedCity = newValue!;
+                          });
+                        },
+                        items: citiesByState[selectedState]!.map((String city) {
+                          return DropdownMenuItem<String>(
+                            value: city,
+                            child: SizedBox(
+                              width: 150,
+                              child: Text(
+                                city,
+                                overflow: TextOverflow.ellipsis,
+                                style: TextStyle(
+                                  color: selectedCity == city
+                                      ? Colors.amber
+                                      : Colors.black,
+                                ),
+                              ),
+                            ),
+                          );
+                        }).toList(),
+                        decoration: InputDecoration(
+                          contentPadding: EdgeInsets.all(20),
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(10.0),
+                            borderSide: BorderSide.none,
+                          ),
+                          filled: true,
+                          fillColor: Color.fromRGBO(143, 94, 223, 1.0),
+                        ),
+                      ),
+                    ),
+                    SizedBox(height: 12.5),
+                  ],
+                ),
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    Container(
+                      margin: EdgeInsets.fromLTRB(0, 5, 0, 5),
+                      child: Text(
+                        "Landmark",
+                        style: Theme.of(context)
+                            .primaryTextTheme
+                            .headlineSmall
+                            ?.merge(
+                              TextStyle(
+                                fontFamily: 'Comic',
+                              ),
+                            ),
+                      ),
+                    ),
+                    SizedBox(height: 2),
+                    Container(
+                      decoration: BoxDecoration(
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.black.withOpacity(0.1),
+                            spreadRadius: 5,
+                            blurRadius: 5,
+                            offset: Offset(0, 3),
+                          ),
+                        ],
+                        borderRadius: BorderRadius.circular(10.0),
+                      ),
+                      child: TextField(
+                        controller: landmarkController,
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontFamily: 'FiraCode',
+                        ),
+                        decoration: InputDecoration(
+                          hintText: 'Enter your landmark',
+                          suffixIcon: Icon(
+                            Icons.token_rounded,
+                            color: Colors.grey[200],
+                          ),
+                          hintStyle: TextStyle(
+                            color: Colors.grey[350],
+                          ),
+                          contentPadding: EdgeInsets.all(20),
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(10.0),
+                            borderSide: BorderSide.none,
+                          ),
+                          filled: true,
+                          fillColor: Color.fromRGBO(143, 94, 223, 1.0),
+                        ),
+                      ),
+                    ),
+                    SizedBox(height: 12.5),
+                  ],
+                ),
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    Container(
+                      margin: EdgeInsets.fromLTRB(0, 5, 0, 5),
+                      child: Text(
+                        "Contact Number",
+                        style: Theme.of(context)
+                            .primaryTextTheme
+                            .headlineSmall
+                            ?.merge(
+                              TextStyle(
+                                fontFamily: 'Comic',
+                              ),
+                            ),
+                      ),
+                    ),
+                    SizedBox(height: 2),
+                    Container(
+                      decoration: BoxDecoration(
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.black.withOpacity(0.1),
+                            spreadRadius: 5,
+                            blurRadius: 5,
+                            offset: Offset(0, 3),
+                          ),
+                        ],
+                        borderRadius: BorderRadius.circular(10.0),
+                      ),
+                      child: TextField(
+                        controller: contactController,
+                        keyboardType: TextInputType.phone,
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontFamily: 'FiraCode',
+                        ),
+                        decoration: InputDecoration(
+                          hintText: 'Enter your Contact Number',
+                          suffixIcon: Icon(
+                            Icons.phone,
+                            color: Colors.grey[200],
+                          ),
+                          hintStyle: TextStyle(
+                            color: Colors.grey[350],
+                          ),
+                          contentPadding: EdgeInsets.all(20),
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(10.0),
+                            borderSide: BorderSide.none,
+                          ),
+                          filled: true,
+                          fillColor: Color.fromRGBO(143, 94, 223, 1.0),
+                        ),
+                      ),
+                    ),
+                    SizedBox(height: 12.5),
+                  ],
+                ),
+
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
@@ -269,8 +594,17 @@ class _SignUpScreenState extends State<SignUpScreen> {
                 ),
                 ElevatedButton(
                   onPressed: () {
-                    _signUpWithEmailAndPassword(emailController.text,
-                        passwordController.text, usernameController.text);
+                    _signUpWithEmailAndPassword(
+                      emailController.text,
+                      passwordController.text,
+                      usernameController.text,
+                      // cityController.text,
+                      selectedCity,
+                      contactController.text,
+                      landmarkController.text,
+                      // stateController.text,
+                      selectedState,
+                    );
                   },
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Color.fromRGBO(143, 94, 223, 1.0),
