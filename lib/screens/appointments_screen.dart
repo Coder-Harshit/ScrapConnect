@@ -16,27 +16,26 @@ class _AppointmentsScreenState extends State<AppointmentsScreen> {
   String _selectedStatus = 'All';
   late List<Map<String, dynamic>> _appointments;
   Map<String, String> _dealerNames = {};
+  List<Map<String, dynamic>> _pastApprovedAppointments = [];
 
   String mailID = '';
+
   @override
   void initState() {
     super.initState();
     _fetchDealerNames();
-    _fetchUserEmail(); // Call the method to fetch user email
+    _fetchUserEmail();
   }
 
   void _fetchUserEmail() async {
     try {
-      // Fetch the user document from Firestore based on email
       QuerySnapshot<Map<String, dynamic>> userSnapshot = await FirebaseFirestore
           .instance
           .collection('users')
           .where('username', isEqualTo: widget.currentUserName)
           .get();
 
-      // Check if any documents are returned
       if (userSnapshot.docs.isNotEmpty) {
-        // Get the first document (assuming email is unique)
         mailID = userSnapshot.docs.first.data()['email'] ?? '';
         print(mailID.toString());
       } else {
@@ -104,17 +103,21 @@ class _AppointmentsScreenState extends State<AppointmentsScreen> {
             _appointments = snapshot.data ?? [];
 
             // Filter appointments based on selected status
-            if (_selectedStatus != 'All') {
-              _appointments = _appointments.where((appointment) {
-                String status = _getAppointmentStatus(appointment['status']);
-                return status == _selectedStatus;
-              }).toList();
-            }
+            List<Map<String, dynamic>> filteredAppointments =
+                _filterAppointments(_appointments);
+
+            // Separate past approved appointments
+            _pastApprovedAppointments = _appointments.where((appointment) {
+              String status = _getAppointmentStatus(appointment['status']);
+              String appointmentType =
+                  _getAppointmentType(appointment['appointmentDateTime']);
+              return status == 'Approved' && appointmentType == 'Past';
+            }).toList();
 
             return ListView.builder(
-              itemCount: _appointments.length,
+              itemCount: filteredAppointments.length,
               itemBuilder: (context, index) {
-                Map<String, dynamic> appointment = _appointments[index];
+                Map<String, dynamic> appointment = filteredAppointments[index];
                 Timestamp appointmentDateTime =
                     appointment['appointmentDateTime'];
                 String formattedDateTime = DateFormat('MMM d, y H:mm a')
@@ -129,10 +132,20 @@ class _AppointmentsScreenState extends State<AppointmentsScreen> {
 
                 return ListTile(
                   title: Text(formattedDateTime),
-                  subtitle: Text(
-                      // 'Dealer Name: $dealerName - Status: $status - $appointmentType'),
-                      'Dealer Name: $dealerName \nStatus: $status \n$appointmentType'),
+                  subtitle: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text('Dealer Name: $dealerName'),
+                      Text('Status: $status'),
+                      Text('$appointmentType'),
+                    ],
+                  ),
                   trailing: Text(status),
+                  onTap: () {
+                    if (appointmentType == 'Past' && status == 'Approved') {
+                      _showAppointmentDetailsDialog(appointment);
+                    }
+                  },
                 );
               },
             );
@@ -140,6 +153,18 @@ class _AppointmentsScreenState extends State<AppointmentsScreen> {
         },
       ),
     );
+  }
+
+  List<Map<String, dynamic>> _filterAppointments(
+      List<Map<String, dynamic>> appointments) {
+    if (_selectedStatus == 'All') {
+      return appointments;
+    } else {
+      return appointments
+          .where((appointment) =>
+              _getAppointmentStatus(appointment['status']) == _selectedStatus)
+          .toList();
+    }
   }
 
   String _getAppointmentStatus(String status) {
@@ -159,5 +184,137 @@ class _AppointmentsScreenState extends State<AppointmentsScreen> {
     DateTime now = DateTime.now();
     DateTime dateTime = appointmentDateTime.toDate();
     return dateTime.isAfter(now) ? 'Upcoming' : 'Past';
+  }
+
+  void _showAppointmentDetailsDialog(Map<String, dynamic> appointment) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text('Appointment Details'),
+          content: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Flexible(
+                child: Text(
+                  'Date and Time: ${DateFormat('MMM d, y H:mm a').format(appointment['appointmentDateTime'].toDate())}',
+                ),
+              ),
+              Flexible(
+                child: Text(
+                  'Dealer Name: ${_dealerNames[appointment['dealerId']]}',
+                ),
+              ),
+              Flexible(
+                child: Text(
+                  'Status: ${_getAppointmentStatus(appointment['status'])}',
+                ),
+              ),
+              Flexible(
+                child: Text(
+                  '${_getAppointmentType(appointment['appointmentDateTime'])}',
+                ),
+              ),
+              Row(
+                children: [
+                  Expanded(
+                    child: Text('Rate this appointment: '),
+                  ),
+                ],
+              ),
+              Row(
+                children: [
+                  Container(
+                    child: RatingWidget(
+                      onChanged: (double rating) {
+                        _updateDealerRating(appointment['dealerId'], rating);
+                      },
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          ),
+          actions: <Widget>[
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+              child: Text('Close'),
+            ),
+          ],
+        );
+      },
+    );
+  }
+}
+
+void _updateDealerRating(String dealerId, double rating) async {
+  try {
+    // Parse dealerId to an integer, providing a default value of 0 if parsing fails
+    int dealerIdAsInt = int.tryParse(dealerId) ?? 0;
+
+    QuerySnapshot<Map<String, dynamic>> dealerSnapshot = await FirebaseFirestore
+        .instance
+        .collection('Kabadi_walas')
+        .where('ID', isEqualTo: dealerIdAsInt)
+        .get();
+
+    if (dealerSnapshot.docs.isNotEmpty) {
+      // Get the first document since ID should be unique
+      DocumentSnapshot<Map<String, dynamic>> dealerDocument =
+          dealerSnapshot.docs.first;
+
+      double currentRating = (dealerDocument.data()?['Rating'] ?? 0).toDouble();
+      int numberOfRatings = dealerDocument.data()?['Number_of_Ratings'] ?? 0;
+
+      double newRating =
+          ((currentRating * numberOfRatings) + rating) / (numberOfRatings + 1);
+
+      await dealerDocument.reference.update({
+        'Rating': newRating,
+        'Number_of_Ratings': numberOfRatings + 1,
+      });
+
+      // Optionally, you can show a confirmation message or update the UI
+    } else {
+      print('Dealer with ID $dealerIdAsInt not found.');
+    }
+  } catch (e) {
+    print("Error updating dealer rating: $e");
+  }
+}
+
+class RatingWidget extends StatefulWidget {
+  final ValueChanged<double> onChanged;
+
+  RatingWidget({required this.onChanged});
+
+  @override
+  _RatingWidgetState createState() => _RatingWidgetState();
+}
+
+class _RatingWidgetState extends State<RatingWidget> {
+  double _rating = 0;
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      children: List.generate(5, (index) {
+        return IconButton(
+          onPressed: () {
+            setState(() {
+              _rating = index + 1;
+              widget.onChanged(_rating);
+            });
+          },
+          icon: Icon(
+            index < _rating ? Icons.star : Icons.star_border,
+            color: Colors.orange,
+          ),
+        );
+      }),
+    );
   }
 }
