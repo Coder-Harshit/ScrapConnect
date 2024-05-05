@@ -1,55 +1,37 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:intl/intl.dart';
 
-class TenderReleaseForm extends StatefulWidget {
-  final String currentUserName;
+class TenderForm extends StatefulWidget {
+  final String userId;
 
-  TenderReleaseForm({required this.currentUserName});
+  const TenderForm({Key? key, required this.userId}) : super(key: key);
 
   @override
-  _TenderReleaseFormState createState() => _TenderReleaseFormState();
+  _TenderFormState createState() => _TenderFormState();
 }
 
-class _TenderReleaseFormState extends State<TenderReleaseForm> {
-  String? selectedItem;
-  Map<String, int> itemPrices = {};
-  List<Map<String, dynamic>> selectedItems = [];
-  List<String> availableItems = [];
-
-  List<Map<String, dynamic>> items = [];
-  Map<int, int> finalAmt = {};
+class _TenderFormState extends State<TenderForm> {
+  final _formKey = GlobalKey<FormState>();
+  final TextEditingController _titleController = TextEditingController();
+  final TextEditingController _weightController = TextEditingController();
+  DateTime? _selectedDate;
+  Map<String, dynamic>? _items;
   String mailID = '';
 
   @override
   void initState() {
     super.initState();
-    _fetchAvailableItems();
     _fetchUserEmail();
-    _fetchAuctionData();
-  }
-
-  void _fetchAvailableItems() async {
-    final DocumentSnapshot<Map<String, dynamic>> snapshot =
-        await FirebaseFirestore.instance
-            .collection('Default_Ratelist')
-            .doc('vShDY9mv8siYe3DccWmy')
-            .get();
-
-    final data = snapshot.data();
-    if (data != null) {
-      setState(() {
-        availableItems = data.keys.toList();
-      });
-    }
-  }
+   }
 
   void _fetchUserEmail() async {
     try {
-      print(widget.currentUserName);
+      print(widget.userId);
       QuerySnapshot<Map<String, dynamic>> userSnapshot = await FirebaseFirestore
           .instance
           .collection('users')
-          .where('username', isEqualTo: widget.currentUserName)
+          .where('username', isEqualTo: widget.userId)
           .get();
 
       if (userSnapshot.docs.isNotEmpty) {
@@ -57,39 +39,38 @@ class _TenderReleaseFormState extends State<TenderReleaseForm> {
         mailID = userSnapshot.docs.first.data()['email'] ?? '';
         print(mailID.toString());
       } else {
-        print('No user found with email: ${widget.currentUserName}');
+        print('No user found with email: ${widget.userId}');
       }
     } catch (e) {
       print("Error fetching user email: $e");
     }
   }
 
-  void _fetchAuctionData() async {
-    print("User email: $mailID"); // Add this line
-    try {
-      DocumentSnapshot<Map<String, dynamic>> auctionSnapshot =
-          await FirebaseFirestore.instance
-              .collection('Tender')
-              .doc(mailID)
-              .get();
-
-      if (auctionSnapshot.exists) {
-        Map<String, dynamic> data = auctionSnapshot.data()!;
-        if (data.containsKey('finalAmt')) {
-          setState(() {
-            finalAmt = Map<int, int>.from(data['finalAmt']);
-          });
-        }
-        if (data.containsKey('items')) {
-          setState(() {
-            items = List<Map<String, dynamic>>.from(data['items']);
-          });
-        }
-      } else {
-        print('No auction data found for user: $mailID');
-      }
-    } catch (e) {
-      print("Error fetching auction data: $e");
+  void _submitForm() {
+    if (_formKey.currentState!.validate()) {
+      // Form is valid, proceed to save data
+      FirebaseFirestore.instance.collection('Auction').doc(mailID).set({
+        'Auction_filldate': _selectedDate,
+        'Auction_selectuserdate': _selectedDate != null ? _selectedDate!.add(Duration(days: 2)) : null,
+        'title': _titleController.text,
+        'finalAmt': {}, // Empty map
+        'items': _items,
+        'dealer_selected': 0,
+      }).then((_) {
+        // Data saved successfully
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Tender details saved successfully!'),
+          ),
+        );
+      }).catchError((error) {
+        // Error saving data
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Failed to save tender details: $error'),
+          ),
+        );
+      });
     }
   }
 
@@ -97,217 +78,213 @@ class _TenderReleaseFormState extends State<TenderReleaseForm> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Add Items'),
+        title: Text('Tender Form'),
       ),
       body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            Text(
-              'Select items and enter prices:',
-              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-            ),
-            SizedBox(height: 20),
-            DropdownButtonFormField<String>(
-              value: selectedItem,
-              decoration: InputDecoration(
-                labelText: 'Select Item',
-                border: OutlineInputBorder(),
+        padding: EdgeInsets.all(16.0),
+        child: Form(
+          key: _formKey,
+          child: ListView(
+            children: [
+              DateTimePicker(
+                labelText: 'Auction Fill Date',
+                selectedDate: _selectedDate,
+                selectDate: (DateTime date) {
+                  setState(() {
+                    _selectedDate = date;
+                  });
+                },
               ),
-              items: availableItems
-                  .where((item) =>
-                      !selectedItems.any((element) => element['item'] == item))
-                  .map((String item) {
-                return DropdownMenuItem<String>(
-                  value: item,
-                  child: Text(item),
-                );
-              }).toList(),
-              onChanged: (String? value) {
-                setState(() {
-                  selectedItem = value;
-                });
-              },
-            ),
-            SizedBox(height: 20),
-            TextFormField(
-              decoration: InputDecoration(
-                labelText: 'Price (in Rupees)',
-                border: OutlineInputBorder(),
+              TextFormField(
+                controller: _titleController,
+                decoration: InputDecoration(labelText: 'Title'),
+                validator: (value) {
+                  if (value == null || value.isEmpty) {
+                    return 'Please enter a title';
+                  }
+                  return null;
+                },
               ),
-              keyboardType: TextInputType.number,
-              onChanged: (value) {
-                if (selectedItem != null) {
-                  itemPrices[selectedItem!] = int.tryParse(value) ?? 0;
-                }
+              ElevatedButton(
+                onPressed: () {
+                  if (_formKey.currentState!.validate()) {
+                    _addItem();
+                  }
+                },
+                child: Text('Add Item'),
+              ),
+              SizedBox(height: 16),
+              if (_items != null && _items!.isNotEmpty)
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      'Items:',
+                      style: TextStyle(fontWeight: FontWeight.bold),
+                    ),
+                    SizedBox(height: 8),
+                    ListView.builder(
+                      shrinkWrap: true,
+                      itemCount: _items!.length,
+                      itemBuilder: (context, index) {
+                        final item = _items!.keys.toList()[index];
+                        final weight = _items![item];
+                        return ListTile(
+                          title: Text('Item: $item, Weight: $weight kgs'),
+                        );
+                      },
+                    ),
+                  ],
+                ),
+              SizedBox(height: 16),
+              ElevatedButton(
+                onPressed: _submitForm,
+                child: Text('Submit'),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  void _addItem() {
+    showDialog(
+      context: context,
+      builder: (context) {
+        final TextEditingController _itemController = TextEditingController();
+        final TextEditingController _weightController = TextEditingController();
+        return AlertDialog(
+          title: Text('Add Item'),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              TextFormField(
+                controller: _itemController,
+                decoration: InputDecoration(labelText: 'Item'),
+                validator: (value) {
+                  if (value == null || value.isEmpty) {
+                    return 'Please enter an item';
+                  }
+                  return null;
+                },
+              ),
+              TextFormField(
+                controller: _weightController,
+                keyboardType: TextInputType.number,
+                decoration: InputDecoration(labelText: 'Weight (kgs)'),
+                validator: (value) {
+                  if (value == null || value.isEmpty) {
+                    return 'Please enter the weight';
+                  }
+                  int weight = int.tryParse(value) ?? 0;
+                  if (weight <= 10000) {
+                    return 'Weight must be greater than 10000';
+                  }
+                  return null;
+                },
+              ),
+            ],
+          ),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
               },
+              child: Text('Cancel'),
             ),
-            SizedBox(height: 20),
             ElevatedButton(
               onPressed: () {
-                if (selectedItem != null &&
-                    selectedItem!.isNotEmpty &&
-                    itemPrices[selectedItem!] != null) {
-                  if (selectedItems.length < 20) {
-                    setState(() {
-                      selectedItems.add({
-                        'item': selectedItem!,
-                        'price': itemPrices[selectedItem],
-                      });
-                      availableItems.remove(selectedItem!);
-                      selectedItem = null;
-                    });
+                if (_itemController.text.isNotEmpty && _weightController.text.isNotEmpty) {
+                  int weight = int.tryParse(_weightController.text) ?? 0;
+                  if (weight > 10000) {
+                    _items = {
+                      _itemController.text: weight,
+                    };
+                    setState(() {});
+                    Navigator.of(context).pop();
                   } else {
                     ScaffoldMessenger.of(context).showSnackBar(
                       SnackBar(
-                        content: Text('Maximum of 20 items allowed'),
-                        backgroundColor: Colors.red,
+                        content: Text('Weight must be greater than 10000 kgs'),
                       ),
                     );
                   }
                 }
               },
-              child: Text('Add Item'),
+              child: Text('Add'),
             ),
-            SizedBox(height: 20),
-            Expanded(
-              child: ListView.builder(
-                shrinkWrap: true,
-                itemCount: selectedItems.length,
-                itemBuilder: (context, index) {
-                  return ListTile(
-                    title: Text(selectedItems[index]['item']),
-                    trailing: Text('₹ ${selectedItems[index]['price']}'),
-                  );
-                },
-              ),
-            ),
-            SizedBox(height: 20),
-            ElevatedButton(
-              onPressed: () {
-                if (selectedItems.length >= 2) {
-                  storeItemDetails(mailID);
-                } else {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(
-                      content: Text('Please add at least 2 items'),
-                      backgroundColor: Colors.red,
-                    ),
-                  );
-                }
-              },
-              child: Text('Finish'),
-            ),
-            SizedBox(height: 20),
-            AuctionSummary(items: items, finalAmt: finalAmt),
           ],
-        ),
-      ),
+        );
+      },
     );
-  }
-
-  void storeItemDetails(String userEmail) async {
-    try {
-      CollectionReference auctionRef =
-          FirebaseFirestore.instance.collection('Tender');
-
-      // Store the selected items directly under the document ID in Firestore
-      await auctionRef.doc(userEmail).set({
-        'items': selectedItems,
-      });
-
-      // Show success message
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('Items added successfully'),
-          backgroundColor: Colors.green,
-        ),
-      );
-    } catch (e) {
-      // Handle errors
-      print('Error adding items: $e');
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('Error adding items: $e'),
-          backgroundColor: Colors.red,
-        ),
-      );
-    }
   }
 }
 
-class AuctionSummary extends StatelessWidget {
-  final List<Map<String, dynamic>> items;
-  final Map<int, int> finalAmt;
+class DateTimePicker extends StatelessWidget {
+  final String labelText;
+  final DateTime? selectedDate;
+  final ValueChanged<DateTime> selectDate;
 
-  AuctionSummary({required this.items, required this.finalAmt});
+  const DateTimePicker({
+    Key? key,
+    required this.labelText,
+    required this.selectedDate,
+    required this.selectDate,
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return Column(
-      crossAxisAlignment: CrossAxisAlignment.stretch,
+      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          'Items for Auction:',
-          style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+          labelText,
+          style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
         ),
-        SizedBox(height: 10),
-        Expanded(
-          child: ListView.builder(
-            itemCount: items.length,
-            itemBuilder: (context, index) {
-              return ListTile(
-                title:
-                    Text('${items[index]['item']} - ${items[index]['price']}'),
-              );
-            },
-          ),
-        ),
-        SizedBox(height: 20),
-        Text(
-          'Amounts:',
-          style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-        ),
-        SizedBox(height: 10),
-        GridView.builder(
-          gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-            crossAxisCount: 3,
-            mainAxisSpacing: 10.0,
-            crossAxisSpacing: 10.0,
-          ),
-          itemCount: finalAmt.length,
-          shrinkWrap: true,
-          itemBuilder: (context, index) {
-            return GestureDetector(
-              onTap: () {
-                // Implement selection logic
-              },
-              child: Container(
-                decoration: BoxDecoration(
-                  border: Border.all(
-                    color: Colors.black,
-                    width: 1,
-                  ),
-                ),
-                padding: EdgeInsets.all(10),
-                alignment: Alignment.center,
-                child: Text(
-                  '${finalAmt.values.toList()[index]}',
+        SizedBox(height: 8),
+        InkWell(
+          onTap: () => _selectDate(context),
+          child: InputDecorator(
+            decoration: InputDecoration(
+              border: OutlineInputBorder(),
+              contentPadding: EdgeInsets.symmetric(horizontal: 10, vertical: 12),
+            ),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text(
+                  selectedDate != null
+                      ? DateFormat.yMd().add_jm().format(selectedDate!)
+                      : 'Select Date and Time',
                   style: TextStyle(fontSize: 16),
                 ),
-              ),
-            );
-          },
-        ),
-        SizedBox(height: 20),
-        ElevatedButton(
-          onPressed: () {
-            // Implement logic to finalize selection
-          },
-          child: Text('Finalize Selection'),
+                Icon(Icons.calendar_today),
+              ],
+            ),
+          ),
         ),
       ],
     );
+  }
+
+  Future<void> _selectDate(BuildContext context) async {
+    final DateTime? picked = await showDatePicker(
+      context: context,
+      initialDate: selectedDate ?? DateTime.now(),
+      firstDate: DateTime.now(),
+      lastDate: DateTime(2101),
+    );
+
+    if (picked != null) {
+      final TimeOfDay? time = await showTimePicker(
+        context: context,
+        initialTime: TimeOfDay.fromDateTime(selectedDate ?? DateTime.now()),
+      );
+
+      if (time != null) {
+        selectDate(DateTime(picked.year, picked.month, picked.day, time.hour, time.minute));
+      }
+    }
   }
 }
