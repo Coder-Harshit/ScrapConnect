@@ -11,10 +11,49 @@ class DealersListPage extends StatefulWidget {
 
 class _DealersListPageState extends State<DealersListPage> {
   List<DataRow> _rows = [];
+  bool _sortAscendingSrno = true;
+  bool _sortAscendingRating = true;
+  late BuildContext _context; // Declare a variable to store the context
+  // Default sorting order
   @override
   void initState() {
     super.initState();
     _fetchData();
+  }
+
+  void _sortRowsBySrno() {
+    _rows.sort((a, b) {
+      int srnoA = int.parse((a.cells[0].child as Text).data!);
+      int srnoB = int.parse((b.cells[0].child as Text).data!);
+      return _sortAscendingSrno
+          ? srnoA.compareTo(srnoB)
+          : srnoB.compareTo(srnoA);
+    });
+  }
+
+  void _sortRowsByRating() {
+    _rows.sort((a, b) {
+      String ratingA = a.cells[2].child.toString();
+      String ratingB = b.cells[2].child.toString();
+      return _sortAscendingRating
+          ? ratingA.compareTo(ratingB)
+          : ratingB.compareTo(ratingA);
+    });
+  }
+
+  void _sortRows(int columnIndex) {
+    if (columnIndex == 0) {
+      _sortAscendingSrno = !_sortAscendingSrno;
+      _sortRowsBySrno();
+    } else if (columnIndex == 2) {
+      _sortAscendingRating = !_sortAscendingRating;
+      _sortRowsByRating();
+    }
+    setState(() {});
+  }
+
+  void _sortRowsDefault() {
+    _sortRowsBySrno(); // Default sorting by Srno
   }
 
   Future<void> _fetchData() async {
@@ -47,7 +86,7 @@ class _DealersListPageState extends State<DealersListPage> {
               GestureDetector(
                 onTap: () {
                   Navigator.push(
-                    context,
+                    _context,
                     MaterialPageRoute(
                       builder: (context) => DealerRatePage(
                         dealerId: doc.data()['ID'].toString(),
@@ -66,6 +105,8 @@ class _DealersListPageState extends State<DealersListPage> {
         );
       });
 
+      _sortRowsDefault(); // Sort rows after fetching data
+
       setState(() {});
     } catch (e) {
       print("Error fetching data: $e");
@@ -74,6 +115,7 @@ class _DealersListPageState extends State<DealersListPage> {
 
   @override
   Widget build(BuildContext context) {
+    _context = context;
     return SingleChildScrollView(
       scrollDirection: Axis.horizontal,
       child: SingleChildScrollView(
@@ -85,9 +127,21 @@ class _DealersListPageState extends State<DealersListPage> {
             child: DataTable(
               columnSpacing: 8.0,
               columns: [
-                DataColumn(label: Text('Srno'), numeric: true),
+                DataColumn(
+                  label: Text('Srno'),
+                  numeric: true,
+                  onSort: (columnIndex, _) {
+                    _sortRows(columnIndex);
+                  },
+                ),
                 DataColumn(label: Text('Name')),
-                DataColumn(label: Text('Rating'), numeric: true),
+                DataColumn(
+                  label: Text('Rating'),
+                  numeric: true,
+                  onSort: (columnIndex, _) {
+                    _sortRows(columnIndex);
+                  },
+                ),
                 DataColumn(label: Text('Contact_Number')),
               ],
               rows: _rows,
