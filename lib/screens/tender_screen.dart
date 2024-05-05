@@ -45,6 +45,7 @@ class _TenderReleaseFormState extends State<TenderReleaseForm> {
 
   void _fetchUserEmail() async {
     try {
+      print(widget.currentUserName);
       QuerySnapshot<Map<String, dynamic>> userSnapshot = await FirebaseFirestore
           .instance
           .collection('users')
@@ -52,6 +53,7 @@ class _TenderReleaseFormState extends State<TenderReleaseForm> {
           .get();
 
       if (userSnapshot.docs.isNotEmpty) {
+        print(userSnapshot.docs.first.data()['email'].toString());
         mailID = userSnapshot.docs.first.data()['email'] ?? '';
         print(mailID.toString());
       } else {
