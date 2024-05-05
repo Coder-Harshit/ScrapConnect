@@ -100,7 +100,10 @@ class _DealersListPageState extends State<DealersListPage> {
               ),
             ),
             DataCell(Text(rating)),
-            DataCell(Text(Contact_Number)),
+            DataCell(Text(
+              Contact_Number,
+              textAlign: TextAlign.right,
+            )),
           ]),
         );
       });
@@ -121,28 +124,29 @@ class _DealersListPageState extends State<DealersListPage> {
       child: SingleChildScrollView(
         scrollDirection: Axis.vertical,
         child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 4.0),
+          padding: const EdgeInsets.fromLTRB(0, 0, 0, 0),
           child: SizedBox(
             width: MediaQuery.of(context).size.width,
             child: DataTable(
-              columnSpacing: 8.0,
+              columnSpacing: 7.0,
               columns: [
                 DataColumn(
-                  label: Text('Srno'),
+                  label: Text('Srno'.toUpperCase()),
                   numeric: true,
                   onSort: (columnIndex, _) {
                     _sortRows(columnIndex);
                   },
                 ),
-                DataColumn(label: Text('Name')),
+                DataColumn(label: Text('Name'.toUpperCase())),
                 DataColumn(
-                  label: Text('Rating'),
+                  label: Text('Rating'.toUpperCase()),
                   numeric: true,
                   onSort: (columnIndex, _) {
                     _sortRows(columnIndex);
                   },
                 ),
-                DataColumn(label: Text('Contact_Number')),
+                DataColumn(
+                    label: Text('Contact_Number'.toUpperCase()), numeric: true),
               ],
               rows: _rows,
             ),
@@ -201,34 +205,46 @@ class _DealerRatePageState extends State<DealerRatePage> {
           return Column(
             children: [
               Expanded(
-                child: ListView.builder(
-                  itemCount: items.length,
-                  itemBuilder: (context, index) {
-                    String itemName = items[index].keys.first;
-                    dynamic itemRate = items[index].values.first;
-                    String imgPath = _getImagePath(itemName);
+                child: Padding(
+                  padding: const EdgeInsets.fromLTRB(0, 3, 0, 3),
+                  child: ListView.builder(
+                    itemCount: items.length,
+                    itemBuilder: (context, index) {
+                      String itemName = (items[index].keys.first).toUpperCase();
+                      dynamic itemRate = items[index].values.first;
+                      String imgPath = _getImagePath(itemName);
 
-                    return ListTile(
-                      leading: imgPath.isNotEmpty
-                          ? Image.asset(
-                              imgPath,
-                              width: 64, // Adjust width as needed
-                              height: 64, // Adjust height as needed
-                              fit: BoxFit.fill, // Use cover fit
-                            )
-                          : Container(
-                              width: 32, // Adjust width as needed
-                              height: 32, // Adjust height as needed
-                              color: Colors.grey, // Placeholder color
-                              child: Icon(
-                                Icons.image, // Placeholder icon
-                                color: Colors.white, // Icon color
+                      return ListTile(
+                        leading: imgPath.isNotEmpty
+                            ? ClipRRect(
+                                borderRadius: BorderRadius.circular(8.0),
+                                child: Image.asset(
+                                  imgPath,
+                                  width: 64,
+                                  height: 64,
+                                  fit: BoxFit.cover, // Use cover fit
+                                ),
+                              )
+                            : Container(
+                                width: 32, // Adjust width as needed
+                                height: 32, // Adjust height as needed
+                                color: Colors.grey, // Placeholder color
+                                child: Icon(
+                                  Icons.image, // Placeholder icon
+                                  color: Colors.white, // Icon color
+                                ),
                               ),
-                            ),
-                      title: Text(itemName),
-                      subtitle: Text(itemRate.toString()),
-                    );
-                  },
+                        title: Text(
+                          itemName,
+                          style: TextStyle(fontWeight: FontWeight.bold),
+                        ),
+                        subtitle: Text(
+                          itemRate.toString(),
+                          style: TextStyle(fontStyle: FontStyle.italic),
+                        ),
+                      );
+                    },
+                  ),
                 ),
               ),
               Padding(

@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:scrap_connect/screens/appointments_screen.dart';
-import 'package:scrap_connect/screens/splash_screen.dart'; // Import your login screen file
+import 'package:scrap_connect/screens/splash_screen.dart';
+import 'package:scrap_connect/screens/tender_screen.dart'; // Import your login screen file
 
 void _logout(BuildContext context) async {
   try {
@@ -53,6 +54,25 @@ class UserPage extends StatelessWidget {
             },
             child: Text(
               "Booked Appointments",
+              style: TextStyle(
+                fontWeight: FontWeight.bold,
+                fontSize: 18.5,
+                fontFamily: 'MonaSans',
+              ),
+            ),
+          ),
+          ElevatedButton(
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) =>
+                      TenderReleaseForm(currentUserName: username),
+                ),
+              );
+            },
+            child: Text(
+              "Tender",
               style: TextStyle(
                 fontWeight: FontWeight.bold,
                 fontSize: 18.5,

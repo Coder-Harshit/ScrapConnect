@@ -165,7 +165,7 @@ class SplashScreen extends StatelessWidget {
                     padding:
                         EdgeInsets.symmetric(horizontal: 35, vertical: 13.5)),
                 child: Text(
-                  "Get Started",
+                  AppLocalizations.of(context)!.getstart,
                   style: TextStyle(
                     fontWeight: FontWeight.bold,
                     fontSize: 18.5,
