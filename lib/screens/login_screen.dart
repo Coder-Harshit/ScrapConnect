@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:scrap_connect/screens/signup_screen.dart';
 import 'package:scrap_connect/screens/home_screen.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+// import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 

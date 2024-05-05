@@ -132,22 +132,27 @@ class _DealersListPageState extends State<DealersListPage> {
               columnSpacing: 7.0,
               columns: [
                 DataColumn(
-                  label: Text('Srno'.toUpperCase()),
-                  numeric: true,
-                  onSort: (columnIndex, _) {
-                    _sortRows(columnIndex);
-                  },
-                ),
-                DataColumn(label: Text('Name'.toUpperCase())),
-                DataColumn(
-                  label: Text('Rating'.toUpperCase()),
+                  label: Text(AppLocalizations.of(context)!.srno),
                   numeric: true,
                   onSort: (columnIndex, _) {
                     _sortRows(columnIndex);
                   },
                 ),
                 DataColumn(
-                    label: Text('Contact_Number'.toUpperCase()), numeric: true),
+                    label:
+                        Text(AppLocalizations.of(context)!.name.toUpperCase())),
+                DataColumn(
+                  label: Text(AppLocalizations.of(context)!.rating),
+                  numeric: true,
+                  onSort: (columnIndex, _) {
+                    _sortRows(columnIndex);
+                  },
+                ),
+                DataColumn(
+                    label: Text(AppLocalizations.of(context)!
+                        .contactNumber
+                        .toUpperCase()),
+                    numeric: true),
               ],
               rows: _rows,
             ),
@@ -175,7 +180,7 @@ class _DealerRatePageState extends State<DealerRatePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Dealer Rates'),
+        title: Text(AppLocalizations.of(context)!.dealerRates),
       ),
       body: FutureBuilder<DocumentSnapshot>(
         future: FirebaseFirestore.instance
@@ -192,7 +197,8 @@ class _DealerRatePageState extends State<DealerRatePage> {
           }
 
           if (!snapshot.hasData || snapshot.data!.data() == null) {
-            return Center(child: Text('No rates found for this dealer.'));
+            return Center(
+                child: Text(AppLocalizations.of(context)!.noRatesFound));
           }
 
           Map<String, dynamic> rates =
@@ -255,7 +261,10 @@ class _DealerRatePageState extends State<DealerRatePage> {
                     // Book appointment logic
                     bookAppointment(context, widget.dealerId, widget.mailID);
                   },
-                  child: Text("BOOK APPOINTMENT"),
+                  child: Text(AppLocalizations.of(context)!
+                      .bookAppointment
+                      .toString()
+                      .toUpperCase()),
                 ),
               )
             ],

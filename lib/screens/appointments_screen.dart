@@ -69,7 +69,7 @@ class _AppointmentsScreenState extends State<AppointmentsScreen> {
       appBar: AppBar(
         title: Text(
           // 'Appointments',
-          AppLocalizations.of(context)!.appointments,
+          AppLocalizations.of(context)!.appTitle,
         ),
         actions: [
           PopupMenuButton(
@@ -157,11 +157,11 @@ class _AppointmentsScreenState extends State<AppointmentsScreen> {
                     children: [
                       Text(
                         // 'Dealer Name: $dealerName',
-                        AppLocalizations.of(context)!.dealerName,
+                        AppLocalizations.of(context)!.dealerName(dealerName),
                       ),
                       Text(
                         // 'Status: $status'
-                        AppLocalizations.of(context)!.status,
+                        AppLocalizations.of(context)!.status(status),
                       ),
                       Text('$appointmentType'),
                     ],

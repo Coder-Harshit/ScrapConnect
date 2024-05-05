@@ -108,6 +108,7 @@
   "welcomeMessage": "Welcome, {username}!",
   "marketPrice": "Market Price",
   "dealersList": "Dealers List",
+  "dealerRates": "Dealer Rates",
   "you": "You",
   "signup": "Signup",
   "alreadyHaveAccount": "Already have an Account?",
@@ -115,8 +116,10 @@
   "username": "Username",
   "state": "State",
   "city": "City",
+  "bookAppointment": "Book Appointment",
   "landmark": "Landmark",
   "contactNumber": "Contact Number",
+  "noRatesFound": "No rates found for this dealer.",
   "password": "Password",
   "signupFailed": "Sign up failed",
   "signupFailedMessage": "Sign up failed: {errorMessage}",
@@ -125,5 +128,6 @@
   "dontHaveAccount": "Don't have an Account",
   "signUpButton": "SignUp",
   "error": "Error",
-  "appointments": "Appointments"
+  "srno": "Srno",
+  "rating": "Rating"
  }

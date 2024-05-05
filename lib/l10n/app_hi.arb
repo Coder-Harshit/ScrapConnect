@@ -122,5 +122,9 @@
   "signupFailedMessage": "साइन अप में विफल हुआ: {errorMessage}",
   "item": "आइटम",
   "error": "त्रुटि",
-  "appointments": "अपॉइंटमेंट"
+  "srno": "श्र. क्र.",
+  "bookAppointment": "अपॉइंटमेंट बुक करें",
+  "noRatesFound": "इस डीलर के लिए कोई दरें नहीं मिलीं।",
+  "rating": "रेटिंग",
+  "dealerRates": "डीलर दरें"
 }

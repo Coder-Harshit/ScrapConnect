@@ -57,8 +57,8 @@ class SplashScreen extends StatelessWidget {
             children: [
               Center(
                 child: Text(
-                  // "Scrap Connect",
-                  AppLocalizations.of(context)!.scrapConnect,
+                  "Scrap Connect",
+                  // AppLocalizations.of(context)!.scrapConnect,
 
                   style: Theme.of(context).primaryTextTheme.displayMedium,
                   textAlign: TextAlign.center,
@@ -116,7 +116,7 @@ class SplashScreen extends StatelessWidget {
                   text: TextSpan(
                     children: [
                       TextSpan(
-                        text: "Unlock the ",
+                        text: AppLocalizations.of(context)!.unlock,
                         style: TextStyle(
                           fontFamily: 'Comic',
                           fontStyle:
@@ -126,7 +126,7 @@ class SplashScreen extends StatelessWidget {
                         ),
                       ),
                       TextSpan(
-                        text: "VALUE",
+                        text: AppLocalizations.of(context)!.value,
                         style: TextStyle(
                           fontFamily: 'FiraCode',
                           // fontStyle:
@@ -137,7 +137,7 @@ class SplashScreen extends StatelessWidget {
                         ),
                       ),
                       TextSpan(
-                        text: " in your ",
+                        text: AppLocalizations.of(context)!.iny,
                         style: TextStyle(
                           fontFamily: 'Comic',
                           fontStyle:
@@ -147,7 +147,7 @@ class SplashScreen extends StatelessWidget {
                         ),
                       ),
                       TextSpan(
-                        text: "SCRAP",
+                        text: AppLocalizations.of(context)!.scr,
                         style: TextStyle(
                           fontFamily: 'FiraCode',
                           // fontStyle:

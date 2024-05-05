@@ -23,7 +23,8 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Welcome, ${widget.username}!'),
+        title:
+            Text(AppLocalizations.of(context)!.welcomeMessage(widget.username)),
       ),
       body: IndexedStack(
         index: _currentIndex,
