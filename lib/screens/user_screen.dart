@@ -70,7 +70,7 @@ class UserPage extends StatelessWidget {
                 context,
                 MaterialPageRoute(
                   builder: (context) =>
-                      TenderReleaseForm(currentUserName: username),
+                      TenderForm(userId: username),
                 ),
               );
             },

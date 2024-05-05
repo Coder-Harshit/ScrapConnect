@@ -156,12 +156,12 @@ class _AppointmentsScreenState extends State<AppointmentsScreen> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        // 'Dealer Name: $dealerName',
-                        AppLocalizations.of(context)!.dealerName,
+                        'Dealer Name: $dealerName',
+                        //AppLocalizations.of(context)!.dealerName,
                       ),
                       Text(
-                        // 'Status: $status'
-                        AppLocalizations.of(context)!.status,
+                         'Status: $status'
+                       // AppLocalizations.of(context)!.status,
                       ),
                       Text('$appointmentType'),
                     ],
