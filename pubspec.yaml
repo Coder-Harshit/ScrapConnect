@@ -46,6 +46,10 @@ dependencies:
 
 
 dev_dependencies:
+  # flutter:
+    # sdk: flutter
+  flutter_localizations:
+    sdk: flutter
   flutter_test:
     sdk: flutter
 

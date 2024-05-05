@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:scrap_connect/screens/appointments_screen.dart';
 import 'package:scrap_connect/screens/splash_screen.dart';
@@ -34,7 +35,8 @@ class UserPage extends StatelessWidget {
               _logout(context); // Pass the context to the logout function
             },
             child: Text(
-              "Logout",
+              // "Logout",
+              AppLocalizations.of(context)!.logout,
               style: TextStyle(
                 fontWeight: FontWeight.bold,
                 fontSize: 18.5,
@@ -53,7 +55,8 @@ class UserPage extends StatelessWidget {
               );
             },
             child: Text(
-              "Booked Appointments",
+              // "Booked Appointments",
+              AppLocalizations.of(context)!.bookedAppointments,
               style: TextStyle(
                 fontWeight: FontWeight.bold,
                 fontSize: 18.5,
@@ -72,7 +75,8 @@ class UserPage extends StatelessWidget {
               );
             },
             child: Text(
-              "Tender",
+              // "Tender",
+              AppLocalizations.of(context)!.tender,
               style: TextStyle(
                 fontWeight: FontWeight.bold,
                 fontSize: 18.5,

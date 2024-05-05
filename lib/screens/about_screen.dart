@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class AboutPage extends StatelessWidget {
   @override
@@ -7,35 +8,40 @@ class AboutPage extends StatelessWidget {
       appBar: AppBar(
         automaticallyImplyLeading: false,
         title: Text(
-          'About Us'.toUpperCase(),
+          AppLocalizations.of(context)!.aboutUs,
           style: TextStyle(fontWeight: FontWeight.bold),
         ),
       ),
       body: ListView(
         children: [
           ListTile(
-            title: Text('Team Lead: Rohit Gupta'),
+            title: Text(AppLocalizations.of(context)!.teamLead),
             subtitle: Text(
-              'App Developer, ML Enthusiast',
+              AppLocalizations.of(context)!.teamLeadDescription,
               style: TextStyle(fontStyle: FontStyle.italic),
             ),
           ),
           ListTile(
-            title: Text('Developer: Harshit Vijay'),
+            title: Text(AppLocalizations.of(context)!.developer),
             subtitle: Text(
-              'App Developer, Open Source Contributor',
+              AppLocalizations.of(context)!.developerDescription,
               style: TextStyle(fontStyle: FontStyle.italic),
             ),
           ),
           ListTile(
-            title: Text('Designer: Anmol Verma'),
+            title: Text(
+                // 'Designer: Anmol Verma',
+                AppLocalizations.of(context)!.designer),
             subtitle: Text(
-              'Figma Designer, Song Writer',
+              // 'Figma Designer, Song Writer',
+              AppLocalizations.of(context)!.designerDescription,
               style: TextStyle(fontStyle: FontStyle.italic),
             ),
           ),
           ListTile(
-            title: Text('Supervisor: Dr. Varun Shrivastav'),
+            title: Text(
+                // 'Supervisor: Dr. Varun Shrivastav',
+                AppLocalizations.of(context)!.supervisor),
           ),
           SizedBox(height: 16.0),
           Padding(
@@ -44,7 +50,8 @@ class AboutPage extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  'About Our App',
+                  // 'About Our App',
+                  AppLocalizations.of(context)!.aboutOurApp,
                   style: TextStyle(
                     fontWeight: FontWeight.bold,
                     fontSize: 18.0,
@@ -52,15 +59,17 @@ class AboutPage extends StatelessWidget {
                 ),
                 SizedBox(height: 16.0),
                 Text(
-                  'This app is designed to help scrap dealers and users looking to sell scrap by enabling them to find scrap dealers at the right time. Oftentimes, scrap dealers may not be present in the right place at the right time, causing inconvenience for both parties. Our app aims to bridge this gap by providing a platform where users can easily locate nearby scrap dealers and dealers can optimize their presence to reach potential customers efficiently.',
+                  AppLocalizations.of(context)!.aboutOurAppDescription,
                 ),
                 SizedBox(height: 16.0),
                 Text(
-                  'Version 1.0.0',
+                  // 'Version 1.0.0',
+                  AppLocalizations.of(context)!.version,
                 ),
                 SizedBox(height: 16.0),
                 Text(
-                  'Copyright © 2024 ScrapConnect',
+                  // 'Copyright © 2024 ScrapConnect',
+                  AppLocalizations.of(context)!.copyright,
                 ),
               ],
             ),

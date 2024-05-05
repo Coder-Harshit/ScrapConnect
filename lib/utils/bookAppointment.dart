@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:cloud_firestore/cloud_firestore.dart'; // Import Firestore package
 
 // Function to book appointment
@@ -65,14 +66,22 @@ Future<void> bookAppointment(
         showDialog(
           context: context,
           builder: (context) => AlertDialog(
-            title: Text('Appointment Booked'),
-            content: Text('Your appointment has been booked successfully!'),
+            title: Text(
+              // 'Appointment Booked',
+              AppLocalizations.of(context)!.appointmentBooked,
+            ),
+            content: Text(
+              // 'Your appointment has been booked successfully!',
+              AppLocalizations.of(context)!.bookingSuccessMessage,
+            ),
             actions: [
               TextButton(
                 onPressed: () {
                   Navigator.of(context).pop(); // Close the dialog
                 },
-                child: Text('OK'),
+                child: Text(
+                  AppLocalizations.of(context)!.ok,
+                ),
               ),
             ],
           ),
@@ -82,15 +91,23 @@ Future<void> bookAppointment(
         showDialog(
           context: context,
           builder: (context) => AlertDialog(
-            title: Text('Appointment Already Booked'),
+            title: Text(
+              // 'Appointment Already Booked',
+              AppLocalizations.of(context)!.appointmentExistsError,
+            ),
             content: Text(
-                'An appointment already exists for the same user and date & time.'),
+              // 'An appointment already exists for the same user and date & time.',
+              AppLocalizations.of(context)!.appointmentExistsMessage,
+            ),
             actions: [
               TextButton(
                 onPressed: () {
                   Navigator.of(context).pop(); // Close the dialog
                 },
-                child: Text('OK'),
+                child: Text(
+                  // 'OK',
+                  AppLocalizations.of(context)!.ok,
+                ),
               ),
             ],
           ),
@@ -102,14 +119,21 @@ Future<void> bookAppointment(
       showDialog(
         context: context,
         builder: (context) => AlertDialog(
-          title: Text('Error'),
-          content: Text('Failed to book appointment. Please try again later.'),
+          title: Text(
+            AppLocalizations.of(context)!.error,
+          ),
+          content: Text(
+            // 'Failed to book appointment. Please try again later.',
+            AppLocalizations.of(context)!.bookingErrorMessage,
+          ),
           actions: [
             TextButton(
               onPressed: () {
                 Navigator.of(context).pop(); // Close the dialog
               },
-              child: Text('OK'),
+              child: Text(
+                AppLocalizations.of(context)!.ok,
+              ),
             ),
           ],
         ),

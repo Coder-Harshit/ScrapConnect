@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:intl/intl.dart';
 import '../utils/extractingAppointments.dart';
 
@@ -66,7 +67,10 @@ class _AppointmentsScreenState extends State<AppointmentsScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Appointments'),
+        title: Text(
+          // 'Appointments',
+          AppLocalizations.of(context)!.appointments,
+        ),
         actions: [
           PopupMenuButton(
             onSelected: (value) {
@@ -77,19 +81,31 @@ class _AppointmentsScreenState extends State<AppointmentsScreen> {
             itemBuilder: (BuildContext context) => <PopupMenuEntry>[
               PopupMenuItem(
                 value: 'All',
-                child: Text('All'),
+                child: Text(
+                  // 'All',
+                  AppLocalizations.of(context)!.allStatus,
+                ),
               ),
               PopupMenuItem(
                 value: 'Pending',
-                child: Text('Pending'),
+                child: Text(
+                  // 'Pending'
+                  AppLocalizations.of(context)!.pendingStatus,
+                ),
               ),
               PopupMenuItem(
                 value: 'Declined',
-                child: Text('Declined'),
+                child: Text(
+                  // 'Declined'
+                  AppLocalizations.of(context)!.declinedStatus,
+                ),
               ),
               PopupMenuItem(
                 value: 'Approved',
-                child: Text('Approved'),
+                child: Text(
+                  // 'Approved'
+                  AppLocalizations.of(context)!.approvedStatus,
+                ),
               ),
             ],
           ),
@@ -139,8 +155,14 @@ class _AppointmentsScreenState extends State<AppointmentsScreen> {
                   subtitle: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text('Dealer Name: $dealerName'),
-                      Text('Status: $status'),
+                      Text(
+                        // 'Dealer Name: $dealerName',
+                        AppLocalizations.of(context)!.dealerName,
+                      ),
+                      Text(
+                        // 'Status: $status'
+                        AppLocalizations.of(context)!.status,
+                      ),
                       Text('$appointmentType'),
                     ],
                   ),
@@ -222,7 +244,10 @@ class _AppointmentsScreenState extends State<AppointmentsScreen> {
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: Text('Appointment Details'),
+          title: Text(
+            // 'Appointment Details',
+            AppLocalizations.of(context)!.appointmentDetails,
+          ),
           content: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             mainAxisSize: MainAxisSize.min,
@@ -250,7 +275,10 @@ class _AppointmentsScreenState extends State<AppointmentsScreen> {
               Row(
                 children: [
                   Expanded(
-                    child: Text('Rate this appointment: '),
+                    child: Text(
+                      // 'Rate this appointment: ',
+                      AppLocalizations.of(context)!.rateAppointment,
+                    ),
                   ),
                 ],
               ),
@@ -258,7 +286,10 @@ class _AppointmentsScreenState extends State<AppointmentsScreen> {
                 children: [
                   Container(
                     child: isRated
-                        ? Text('Already Rated')
+                        ? Text(
+                            // 'Already Rated',
+                            AppLocalizations.of(context)!.alreadyRated,
+                          )
                         : RatingWidget(
                             onChanged: (double rating) {
                               setState(() {
@@ -285,7 +316,10 @@ class _AppointmentsScreenState extends State<AppointmentsScreen> {
               onPressed: () {
                 Navigator.of(context).pop();
               },
-              child: Text('Close'),
+              child: Text(
+                // 'Close'
+                AppLocalizations.of(context)!.closeButton,
+              ),
             ),
           ],
         );

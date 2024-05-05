@@ -16,20 +16,30 @@ class SplashScreen extends StatelessWidget {
           context: context,
           builder: (BuildContext context) {
             return AlertDialog(
-              title: Text("Confirm Exit"),
-              content: Text("Do you want to exit the app?"),
+              title: Text(
+                // "Confirm Exit",
+                AppLocalizations.of(context)!.confirmExit,
+              ),
+              content: Text(
+                // "Do you want to exit the app?",
+                AppLocalizations.of(context)!.exitMessage,
+              ),
               actions: [
                 TextButton(
                   onPressed: () {
                     Navigator.of(context).pop(false); // Stay in the app
                   },
-                  child: Text("No"),
+                  child: Text(
+                    AppLocalizations.of(context)!.no,
+                  ),
                 ),
                 TextButton(
                   onPressed: () {
                     Navigator.of(context).pop(true); // Exit the app
                   },
-                  child: Text("Yes"),
+                  child: Text(
+                    AppLocalizations.of(context)!.yes,
+                  ),
                 ),
               ],
             );
@@ -47,7 +57,9 @@ class SplashScreen extends StatelessWidget {
             children: [
               Center(
                 child: Text(
-                  "Scrap Connect",
+                  // "Scrap Connect",
+                  AppLocalizations.of(context)!.scrapConnect,
+
                   style: Theme.of(context).primaryTextTheme.displayMedium,
                   textAlign: TextAlign.center,
                 ),
