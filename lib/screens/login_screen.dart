@@ -107,6 +107,7 @@ class _LoginScreenState extends State<LoginScreen> {
                         SizedBox(height: 5),
                         TextField(
                           controller: emailController,
+                          keyboardType: TextInputType.emailAddress,
                           style: TextStyle(
                             color: Colors.white,
                             fontFamily: 'FiraCode',

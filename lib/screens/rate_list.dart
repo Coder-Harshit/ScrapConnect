@@ -37,30 +37,36 @@ class _RateListPageState extends State<RateListPage> {
         DataRow(cells: [
           DataCell(
             Padding(
-              padding: const EdgeInsets.all(3.0),
+              padding: const EdgeInsets.all(8.0),
               child: Row(
                 children: [
                   SizedBox(
-                    width: 124, // Set the width of the imagew
-                    height: 124, // Set the height of the image
-                    child: Image.asset(
-                      imagePath, // Display the image from assets
-                      fit: BoxFit.cover, // Cover the entire space
+                    width: 100, // Set the width of the imagew
+                    height: 100, // Set the height of the image
+                    child: ClipRRect(
+                      borderRadius: BorderRadius.circular(8.0),
+                      child: Image.asset(
+                        imagePath, // Display the image from assets
+                        fit: BoxFit.cover, // Cover the entire space
+                      ),
                     ),
                   ),
                   SizedBox(
-                    width: 8,
-                    // height: 8,
-                  ), // Add some spacing between the image and text
+                      width: 16), // Add some spacing between the image and text
                   Text(
                     itemName,
-                    style: TextStyle(fontWeight: FontWeight.bold),
+                    style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
                   ),
                 ],
               ),
             ),
           ),
-          DataCell(Text(rate.toString())),
+          DataCell(
+            Text(
+              rate.toString(),
+              style: TextStyle(fontSize: 16),
+            ),
+          ),
         ]),
       );
     });
@@ -80,23 +86,44 @@ class _RateListPageState extends State<RateListPage> {
   @override
   Widget build(BuildContext context) {
     return SingleChildScrollView(
-      scrollDirection: Axis.horizontal,
+      // scrollDirection: Axis.horizontal,
+      scrollDirection: Axis.vertical,
       child: SingleChildScrollView(
         scrollDirection: Axis.vertical,
         child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 4.0),
+          padding: const EdgeInsets.fromLTRB(0, 1, 0, 1),
           child: SizedBox(
             width: MediaQuery.of(context).size.width,
             child: DataTable(
-              columnSpacing: 8.0,
+              columnSpacing: 16.0,
+              headingRowHeight: 56,
+              dataRowMinHeight: 10,
+              dataRowMaxHeight: 70,
+              headingTextStyle:
+                  TextStyle(letterSpacing: 2, fontFamily: 'MonaSans'),
               columns: [
                 DataColumn(
-                  label: Text('Item'),
+                  label: Expanded(
+                    child: Text(
+                      'ITEM',
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 18,
+                      ),
+                      textAlign: TextAlign.center,
+                    ),
+                  ),
                   numeric: false,
                   tooltip: 'Item Name',
                 ),
                 DataColumn(
-                  label: Text('Price'),
+                  label: Expanded(
+                    child: Text(
+                      'PRICE',
+                      style:
+                          TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
+                    ),
+                  ),
                   numeric: true,
                   tooltip: 'Rate of Item',
                 ),
